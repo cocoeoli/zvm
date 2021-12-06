@@ -1,0 +1,8 @@
+[build]
+board = qemu_cortex_a53
+
+[manifest]
+path = zephyr
+
+[zephyr]
+base = zephyr

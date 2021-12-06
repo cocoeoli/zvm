@@ -1,0 +1,23 @@
+---
+
+name: Zephyr
+
+# 'workflow_dispatch' allows running this workflow manually from the
+# 'Actions' tab
+# yamllint disable-line rule:truthy
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  zephyr-build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        # From time to time this will catch a git tag and change SOF_VERSION
+        with: {fetch-depth: 10, submodules: recursive}
+
+      # Note: env variables can be passed to the container with
+      # -e https_proxy=...
+      - name: build
+        run: docker run -v "$(pwd)":/workdir
+             docker.io/zephyrprojectrtos/zephyr-build:latest
+             ./zephyr/docker-build.sh -- -DEXTRA_CFLAGS='-Werror'
