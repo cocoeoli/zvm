@@ -13,7 +13,7 @@
 /*
  * #include <lib/util/getopt/getopt.h>
  */
-/*#include <unistd.h>*/
+#include <unistd.h>
 
 int main(int argc, char **argv){
    printk("Hello world!\n");
