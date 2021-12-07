@@ -1,0 +1,22 @@
+# Hypervisor configuration options
+
+# Copyright (c) 2021 Huang Jiajia
+# Email: Huanhjj2020@hnu.edu.cn
+# Date: 2021-12-07
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig HYPERVISOR
+    bool "Hypervisor"
+
+
+if HYPERVISOR
+
+module = HYPERVISOR
+module-str = hypervisor
+
+
+
+
+
+
+endif   # HYPERVISOR
