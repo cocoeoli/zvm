@@ -12,7 +12,7 @@
 #include <zephyr.h>
 #include <sys/printk.h>
 #include <shell/shell.h>
-
+#include <hypervisor/hypervisor.h>
 
 int main(int argc, char **argv)
 {

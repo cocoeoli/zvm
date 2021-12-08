@@ -6,9 +6,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <zephyr>
-#include <unistd.h>
+#include <zephyr.h>
 #include <shell/shell.h>
+#include <hypervisor/hypervisor.h>
 
 
 #define SHELL_HELP_ZVISOR "Hypervisor manager command. " \
@@ -29,7 +29,7 @@ static int cmd_zvisor_new(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("Create a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "Create a new vm success.\n");
     return 0;
 }
 
@@ -39,7 +39,7 @@ static int cmd_zvisor_set(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("Set a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "Set a new vm success.\n");
     return 0;
 }
 
@@ -49,7 +49,7 @@ static int cmd_zvisor_run(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("Run a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "Run a new vm success.\n");
     return 0;
 }
 
@@ -59,7 +59,7 @@ static int cmd_zvisor_update(const struct shell *shell, size_t argc, char **argv
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("Update a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "Update a new vm success.\n");
     return 0;
 }
 
@@ -69,7 +69,7 @@ static int cmd_zvisor_list(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("List a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "List a new vm success.\n");
     return 0;
 }
 
@@ -79,7 +79,7 @@ static int cmd_zvisor_delete(const struct shell *shell, size_t argc, char **argv
     ARG_UNUSED(argc);
     ARG_UNUSED(argv);
 
-    shell_print("Delete a new vm success.\n");
+    shell_fprintf(shell, SHELL_NORMAL, "Delete a new vm success.\n");
     return 0;
 }
 

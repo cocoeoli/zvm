@@ -1,13 +1,15 @@
-.. _hello_world:
+.. _hypervisor:
 
-Hello World
+Hypervisor
 ###########
 
 Overview
 ********
 
-A simple sample that can be used with any :ref:`supported board <boards>` and
-prints "Hello World" to the console.
+ver1.0
+The first step is to make a shell to get command, such as 
+zvisor. This step mainly create by system build-in module,
+which is at subsys/shell.
 
 Building and Running
 ********************
@@ -15,19 +17,19 @@ Building and Running
 This application can be built and executed on QEMU as follows:
 
 .. zephyr-app-commands::
-   :zephyr-app: samples/hello_world
-   :host-os: unix
-   :board: qemu_x86
+   :zephyr-app: hypervisor
+   :host-os: Linux
+   :board: qemu_cortex_a53
    :goals: run
    :compact:
 
-To build for another board, change "qemu_x86" above to that board's name.
+To build for another board, change "qemu_cortex_a53" above to that board's name.
 
 Sample Output
 =============
 
 .. code-block:: console
 
-    Hello World! x86
+    [uart]: <shell>
 
 Exit QEMU by pressing :kbd:`CTRL+A` :kbd:`x`.

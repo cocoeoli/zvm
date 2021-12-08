@@ -6,17 +6,14 @@
 # SPDX-License-Identifier: Apache-2.0
 
 menuconfig HYPERVISOR
-    bool "Hypervisor"
-
+	bool "Hypervisor"
 
 if HYPERVISOR
 
-module = HYPERVISOR
-module-str = hypervisor
-
-
-
-
-
+config CONFIG_HYPERVISOR
+	bool "Set shell for hypervisor"
+	default y    
+	help
+	  The hypervisor app have a top shell to receive command, such as zvisor.
 
 endif   # HYPERVISOR

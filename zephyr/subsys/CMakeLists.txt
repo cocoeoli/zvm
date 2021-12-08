@@ -30,3 +30,5 @@ add_subdirectory(canbus)
 add_subdirectory_ifdef(CONFIG_TIMING_FUNCTIONS     timing)
 add_subdirectory_ifdef(CONFIG_DEMAND_PAGING        demand_paging)
 add_subdirectory(modbus)
+# modify for hypervisor
+add_subdirectory(hypervisor)
