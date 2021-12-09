@@ -22,7 +22,7 @@
 #define DAIF_FIQ_BIT		BIT(6)
 #define DAIF_IRQ_BIT		BIT(7)
 #define DAIF_ABT_BIT		BIT(8)
-#define DAIF_DBG_BIT		BIT(9)
+#define DAIF_DBG_BIT		BIT(9) /* C5.2.2 */
 
 #define SPSR_DAIF_SHIFT		(6)
 #define SPSR_DAIF_MASK		(0xf << SPSR_DAIF_SHIFT)
@@ -31,7 +31,7 @@
 #define SPSR_MODE_EL1T		(0x4)
 #define SPSR_MODE_EL1H		(0x5)
 #define SPSR_MODE_EL2T		(0x8)
-#define SPSR_MODE_EL2H		(0x9)
+#define SPSR_MODE_EL2H		(0x9) /* C5-474 */
 #define SPSR_MODE_MASK		(0xf)
 
 
