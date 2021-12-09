@@ -18,8 +18,8 @@
 #define MT_DEVICE_nGnRE		1U
 #define MT_DEVICE_GRE		2U
 #define MT_NORMAL_NC		3U
-#define MT_NORMAL		4U
-#define MT_NORMAL_WT		5U
+#define MT_NORMAL			4U
+#define MT_NORMAL_WT		5U	/* D5.5.1 */
 
 #define MEMORY_ATTRIBUTES	((0x00 << (MT_DEVICE_nGnRnE * 8)) |	\
 				(0x04 << (MT_DEVICE_nGnRE * 8))   |	\
