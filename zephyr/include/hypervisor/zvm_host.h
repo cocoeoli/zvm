@@ -30,7 +30,7 @@ struct vm {
 
     
     /* A array for collect vcpu. */
-    struct kvm_vcpu *vcpus[VM_MAX_VCPUS];
+    struct vm_vcpu *vcpus[VM_MAX_VCPUS];
 
 
 
