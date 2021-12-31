@@ -19,8 +19,8 @@
 #define SHELL_HELP_RUN_VM "Run vm x.\n"
 #define SHELL_HELP_UPDATE_VM "Update vm x.\n"
 #define SHELL_HELP_LIST_VM "List all vm info.\n"
-#define SHELL_HELP_DELETE_VM "Delete vm x.\n"
 #define SHELL_HELP_HALT_VM "Halt vm x.\n"
+#define SHELL_HELP_DELETE_VM "Delete vm x.\n"
 
 
 static int cmd_zvm_new(const struct shell *shell, size_t argc, char **argv)
@@ -73,16 +73,6 @@ static int cmd_zvm_list(const struct shell *shell, size_t argc, char **argv)
     return 0;
 }
 
-static int cmd_zvm_delete(const struct shell *shell, size_t argc, char **argv)
-{
-    /* Delete vm code. */
-    ARG_UNUSED(argc);
-    ARG_UNUSED(argv);
-
-    shell_fprintf(shell, SHELL_NORMAL, "Delete a new vm success.\n");
-    return 0;
-}
-
 static int cmd_zvm_halt(const struct shell *shell, size_t argc, char **argv)
 {
     /* Halt vm code. */
@@ -90,6 +80,16 @@ static int cmd_zvm_halt(const struct shell *shell, size_t argc, char **argv)
     ARG_UNUSED(argv);
 
     shell_fprintf(shell, SHELL_NORMAL, "Halt a new vm success.\n");
+    return 0;
+}
+
+static int cmd_zvm_delete(const struct shell *shell, size_t argc, char **argv)
+{
+    /* Delete vm code. */
+    ARG_UNUSED(argc);
+    ARG_UNUSED(argv);
+
+    shell_fprintf(shell, SHELL_NORMAL, "Delete a new vm success.\n");
     return 0;
 }
 

@@ -21,7 +21,7 @@ struct vcpu{
 
 struct vm {
     /* Need a spinlock for protecting mmu. */
-    /*struct spinlock ;*/
+    struct k_spinlock spinlock;
 
     /* Block memory allocated for this vm. */
 
