@@ -263,7 +263,6 @@ enum node_rx_type {
 	NODE_RX_TYPE_SYNC_LOST,
 	NODE_RX_TYPE_SYNC_CHM_COMPLETE,
 	NODE_RX_TYPE_SYNC_ISO,
-	NODE_RX_TYPE_SYNC_ISO_PDU,
 	NODE_RX_TYPE_SYNC_ISO_LOST,
 	NODE_RX_TYPE_EXT_ADV_TERMINATE,
 	NODE_RX_TYPE_BIG_COMPLETE,
@@ -311,7 +310,6 @@ struct node_rx_ftr {
 				*/
 		void *aux_ptr;
 		uint8_t aux_phy;
-		uint8_t aux_sched;
 		struct cte_conn_iq_report *iq_report;
 	};
 	uint32_t ticks_anchor;
@@ -336,7 +334,8 @@ struct node_rx_ftr {
 	uint8_t  aux_w4next:1;
 	uint8_t  aux_failed:1;
 #if defined(CONFIG_BT_CTLR_SYNC_PERIODIC)
-	uint8_t sync_status:2;
+	uint8_t  sync_status:2;
+	uint8_t  sync_rx_enabled:1;
 #endif /* CONFIG_BT_CTLR_SYNC_PERIODIC */
 
 	uint8_t  phy_flags:1;

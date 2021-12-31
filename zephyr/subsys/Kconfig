@@ -2,7 +2,6 @@
 
 # Copyright (c) 2016-2017 Intel Corporation
 # Copyright (c) 2021 Nordic Semiconductor
-# Copyright (c) 2021 Huang Jiajia
 # SPDX-License-Identifier: Apache-2.0
 
 menu "Sub Systems and OS Services"
@@ -67,6 +66,7 @@ source "subsys/tracing/Kconfig"
 
 source "subsys/demand_paging/Kconfig"
 
-source "subsys/hypervisor/Kconfig"
+# modify for hypervisor
+source "subsys/_zvm/Kconfig"
 
 endmenu

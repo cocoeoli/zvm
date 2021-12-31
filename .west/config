@@ -1,8 +1,9 @@
-[build]
-board = qemu_cortex_a53
-
 [manifest]
 path = zephyr
+file = west.yml
 
 [zephyr]
 base = zephyr
+
+[build]
+board = qemu_cortex_a53

@@ -1,7 +1,0 @@
-undefine(`DEF_TDFB_PRIV')
-undefine(`DEF_TDFB_BYTES')
-undefine(`DEF_TDFB_BEAM')
-undefine(`DEF_TDFB_DIRECTION')
-undefine(`DEF_TDFB_AZIMUTH')
-undefine(`DEF_TDFB_AZIMUTH_ESTIMATE')
-undefine(`DEF_TDFB_AZIMUTH_VALUES')

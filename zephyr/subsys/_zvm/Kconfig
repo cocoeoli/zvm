@@ -1,0 +1,19 @@
+# ZVM configuration options
+
+# Copyright (c) 2021 Huang Jiajia
+# Email: Huanhjj2020@hnu.edu.cn
+# Date: 2021-12-07
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig ZVM
+	bool "ZVM"
+
+if ZVM
+
+config CONFIG_ZVM
+	bool "Set shell for zvm"
+	default y    
+	help
+	  The zvm app have a top shell to receive command, such as zvm.
+
+endif   # ZVM

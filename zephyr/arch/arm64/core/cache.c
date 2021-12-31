@@ -34,7 +34,7 @@
 #define CCSIDR_EL1_SETS_SHIFT		13
 #define CCSIDR_EL1_SETS_MASK		BIT_MASK(15)
 
-#define dc_ops(op, val)							\
+#define dc_ops(op, val)				\
 ({									\
 	__asm__ volatile ("dc " op ", %0" :: "r" (val) : "memory");	\
 })
@@ -43,7 +43,7 @@ static size_t dcache_line_size;
 
 size_t arch_dcache_line_size_get(void)
 {
-	uint64_t ctr_el0;
+	uint64_t ctr_el0;	/* Cache type register. */
 	uint32_t dminline;
 
 	if (dcache_line_size)
