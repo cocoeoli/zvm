@@ -24,7 +24,7 @@ struct vm_input_params{
     size_t vcpu_num;
     size_t memory_alloc;
     char *os_img_path;
-}
+};
 
 int _create_vm(size_t argc, char **argv);
 int _set_vm(size_t argc, char **argv);
