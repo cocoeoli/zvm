@@ -13,8 +13,8 @@
 
 #include <stdint.h>
 
-#define VM_NR_SPSR  5
-#define NR_SYS_REGS 94
+#define VM_NR_SPSR      5
+#define NR_SYS_REGS     94
 #define NR_COPRO_REGS   (NR_SYS_REGS * 2)
 
 #ifndef _ASMLANGUAGE

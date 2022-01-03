@@ -13,8 +13,10 @@
 #include <shell/shell.h>
 #include <_zvm/zvm.h>
 
-int main(int argc, char **argv)
-{
-   printk("ZVM test.../n");
+int main(int argc, char **argv){
+   int ret = __zvm_info_init(&sys_info);
+   
+   printk("ZVM test, %d\n", ret);
+   zvm_info_print(&sys_info);
    return 0;
 }

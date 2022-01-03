@@ -19,6 +19,10 @@ struct vcpu{
     struct vm *vm;
 };
 
+/**
+ * @TODO 
+ * 
+ */
 struct vm {
     /* Need a spinlock for protecting mmu. */
     struct k_spinlock spinlock;

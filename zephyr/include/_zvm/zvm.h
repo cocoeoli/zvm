@@ -36,6 +36,12 @@ extern "C" {
 #include <stdint.h>
 #include <errno.h>
 
+#define SINGLE_CORE     1U
+#define MEMORY_NODE_ID  memory_40000000
+#define CPU_TYPENAME    DT_PROP_BY_IDX(DT_PATH(cpus, cpu_0), compatible, 0)
+#define MEMORY_SIZE     DT_REG_SIZE_BY_IDX(DT_PATH(soc, MEMORY_NODE_ID), 0)
+#define DT_MB           (1024 * 1024)
+
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.
  * 
@@ -45,11 +51,11 @@ extern "C" {
  * information of hardware.
  */
 struct zvm_info{
-    /* Physical CPU core number. */
-    uint16_t phy_cpu_num;
-
     /* Number of vm in system, vm's number starts from 1. */
     uint16_t vm_total_num;
+
+    /* Physical CPU core number. */
+    uint16_t phy_cpu_num;
 
     /* Physical memory. */
     uint64_t phy_mem;
@@ -62,15 +68,16 @@ struct zvm_info{
 };
 
 typedef struct zvm_info zvm_info_t;
+static zvm_info_t sys_info;
 
 /**
- * @brief Get number of physical cpu.
+ * @brief Get number of physical cpu and its typename.
  * 
  * Through devicetree macro and pass value into system information structure.
- * @return If get number of physical cpu success, then return 0; else return 
- * error code.
+ * @return If get number of physical cpu and typename success, then return 0; 
+ * else return error code.
  */
-int __dt_get_cpu_num(zvm_info_t *sys_info);
+int __dt_get_cpu_info(zvm_info_t *sys_info);
 
 /**
  * @brief Get physical memory size.
@@ -89,6 +96,10 @@ int __dt_get_mem_size(zvm_info_t *sys_info);
  */
 int __zvm_info_init(zvm_info_t *sys_info);
 
+/**
+ * @brief Print zvm_info structure.
+ */
+void zvm_info_print(zvm_info_t *sys_info);
 
 #ifdef __cplusplus
 }
