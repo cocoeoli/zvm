@@ -51,10 +51,10 @@ int __zvm_info_init(zvm_info_t *sys_info){
 
 void zvm_info_print(zvm_info_t *sys_info){
     printk(">---- System's information ----<\n");
-    printk("All phy-cpu: %d\n", sys_info->phy_cpu_num);
-    printk("CPU's type : %s\n", sys_info->cpu_type);
-    printk("All phy-mem: %.2fMB\n", (float)(sys_info->phy_mem)/DT_MB);
-    printk("Memory used: %.2fMB\n", (float)(sys_info->phy_mem_used)/DT_MB);
-    printk("VM's number: %d\n", sys_info->vm_total_num);
+    printk("  All phy-cpu: %d\n", sys_info->phy_cpu_num);
+    printk("  CPU's type : %s\n", sys_info->cpu_type);
+    printk("  All phy-mem: %.2fMB\n", (float)(sys_info->phy_mem)/DT_MB);
+    printk("  Memory used: %.2fMB\n", (float)(sys_info->phy_mem_used)/DT_MB);
+    printk("  VM's number: %d\n", sys_info->vm_total_num);
     printk(">------------------------------<\n");
 }

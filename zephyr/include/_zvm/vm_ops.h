@@ -13,13 +13,10 @@
 #include <stdlib.h>
 
 #include <getopt.h>
+#include <_zvm/debug/debug.h>
 #include <shell/shell.h>
 #include <sys/printk.h>
 #include <errno.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * @file Realize APIs which realted to vm.
@@ -28,15 +25,23 @@ extern "C" {
  * These APIs will be called by subsys/zvm/shell.c.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * This struct includes the parameters that user input for defining a vm.
- * Such as vCPU cores, memory allocation, OS image location and so on.
+ * Such as vm serial number, vCPU cores, memory allocation, OS image location 
+ * and so on.
  */
 struct vm_input_params{
+    int vm_num;         /* Which vm we set. */
     int vcpu_num;       /* 0 ~ 8. */
     int vm_memory;      /* 0 ~ 50M, default unit is MB. */
     char *os_img_path;  /* OS image file path. */
 };
+
+typedef struct vm_input_params vm_info_t;
 
 int _create_vm(size_t argc, char **argv);
 int _set_vm(size_t argc, char **argv);

@@ -15,22 +15,58 @@
  * parsing args. We can realize it under the help of zpehyr/lib/util/getopt.
  */
 
-int _create_vm(size_t argc, char **argv){
-    /* Parse input args. */
-	struct getopt_state state = {1, 1, 0, 0, NULL, ""};
-	struct vm_input_params vm_params = {0, 0, ""};
-	int opt;
+/* Structure for parsing args. */
+struct getopt_state *state;
 
-	while ((opt = getopt(&state, argc, argv, "c:m:i:")) != -1) {
+/* Structure for stroing input args. */
+struct vm_input_params *vm_params;
+
+int _create_vm(size_t argc, char **argv){
+	int ret = _set_vm(argc, argv);
+	if(ret){
+		/* Parsing input error. */
+		pr_err("Parsing number Error!\n");
+		return -ENOMEM;
+	}
+
+    return 0;
+}
+
+int _set_vm(size_t argc, char **argv){
+	free(state);
+	free(vm_params);
+
+	/* Initial structure pointer. */
+	state = (struct getopt_state*)malloc(sizeof(struct getopt_state));
+	if(!state){
+		pr_err("Allocation memory Error!\n");
+		return -ENOMEM;
+	}
+	getopt_init(state);
+
+	vm_params = (struct vm_input_params*)malloc(sizeof(struct vm_input_params));
+	if(!vm_params){
+		pr_err("Allocation memory Error!\n");
+		free(state);
+		return -ENOMEM;
+	}
+
+    /* Parse input args. */
+	int opt;
+	char *optstring = "n:c:m:i:";
+	while ((opt = getopt(state, argc, argv, optstring)) != -1) {
 		switch (opt) {
+		case 'n':
+			vm_params->vm_num = atoi(state->optarg);
+			break;
 		case 'c':
-			vm_params.vcpu_num = atoi(state.optarg);
+			vm_params->vcpu_num = atoi(state->optarg);
 			break;
 		case 'm':
-			vm_params.vm_memory = atoi(state.optarg);
+			vm_params->vm_memory = atoi(state->optarg);
 			break;
 		case 'i':
-			vm_params.os_img_path = state.optarg;
+			vm_params->os_img_path = state->optarg;
 			break;
 		default:
 			return -EINVAL;
@@ -38,12 +74,6 @@ int _create_vm(size_t argc, char **argv){
 	}
 
     return 0;
-}
-
-int _set_vm(size_t argc, char **argv){
-
-    return 0;
-
 }
 
 int _run_vm(size_t vm_num){
