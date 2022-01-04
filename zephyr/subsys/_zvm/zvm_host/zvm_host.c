@@ -16,6 +16,7 @@ int __dt_get_cpu_info(zvm_info_t *sys_info){
     sys_info->phy_cpu_num = CONFIG_MP_NUM_CPUS;
 #else
     sys_info->phy_cpu_num = SINGLE_CORE;
+    printk("There\n");
 #endif
     /* node-id : DT_PATH(cpus, cpu_0) */
     sys_info->cpu_type = CPU_TYPENAME;

@@ -11,17 +11,25 @@
 
 #include <spinlock.h>
 
-
-/* We support SMP later. */
+/**
+ * @TODO We support SMP later. 
+ */
 #define VM_MAX_VCPUS 1
 
 struct vcpu{
+    /* Which vm this vCPU belongs to. */
     struct vm *vm;
+
+    int vcpu_id;
+
+
+    /* VM run info record. */
+    struct zvm_run *run;
+
 };
 
 /**
- * @TODO 
- * 
+ * @TODO  
  */
 struct vm {
     /* Need a spinlock for protecting mmu. */
@@ -30,16 +38,10 @@ struct vm {
     /* Block memory allocated for this vm. */
 
     
+    struct zvm_arch arch;
+
     /* A array for collect vcpu. */
     struct vm_vcpu *vcpus[VM_MAX_VCPUS];
-
-
-
-
 };
-
-
-
-
 
 #endif /* ZVM_HOST_H__ */

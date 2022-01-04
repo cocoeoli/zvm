@@ -9,6 +9,17 @@
 #ifndef ZVM_VM_OPS_H__
 #define ZVM_VM_OPS_H__
 
+#include <stddef.h>
+#include <stdlib.h>
+
+#include <getopt.h>
+#include <shell/shell.h>
+#include <sys/printk.h>
+#include <errno.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * @file Realize APIs which realted to vm.
@@ -17,13 +28,14 @@
  * These APIs will be called by subsys/zvm/shell.c.
  */
 
-/* This struct includes the parameters that user input for defining a vm.
+/*
+ * This struct includes the parameters that user input for defining a vm.
  * Such as vCPU cores, memory allocation, OS image location and so on.
  */
 struct vm_input_params{
-    size_t vcpu_num;
-    size_t memory_alloc;
-    char *os_img_path;
+    int vcpu_num;       /* 0 ~ 8. */
+    int vm_memory;      /* 0 ~ 50M, default unit is MB. */
+    char *os_img_path;  /* OS image file path. */
 };
 
 int _create_vm(size_t argc, char **argv);
@@ -34,5 +46,8 @@ int _collect_vm_info(size_t vm_num);
 int _halt_vm(size_t vm_num);
 int _delete_vm(size_t vm_num);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ZVM_VM_OPS_H__ */

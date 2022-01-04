@@ -38,7 +38,9 @@ struct zvm_regs{
 
     uint64_t spsr[VM_NR_SPSR];
 
-    /* Floating-point regs we add later. */
+    /**
+     * @TODO Floating-point regs we add later. 
+     */
 }
 
 #endif /* _ASMLANGUAGE */
@@ -52,5 +54,11 @@ struct zvm_vcpu_context {
 }
 
 typedef struct zvm_vcpu_context zvm_vcpu_context_t;
+
+struct zvm_run{
+    /* Out. */
+    uint32_t exit_reason;
+}
+
 
 #endif /* ZVM_ASM_VCPU_H__ */

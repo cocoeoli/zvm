@@ -4,14 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// #include <stdlib.h>
 #include <zephyr.h>
 #include <sys/printk.h>
 
-#define MEMORY_NODE_ID	memory_40000000
-
-void main(void)
-{
-	char *node_id = DT_PATH(soc, MEMORY_NODE_ID);
-    printk("%s\n", node_id);
+void main(void){
 	printk("Hello World! %s\n", CONFIG_BOARD);
+	char *s = "99";
+	printk("s = %s\n", s);
+	int c = atoi(s);
+	printk("i = %d\n", c);
+	return 0;
 }

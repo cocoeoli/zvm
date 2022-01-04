@@ -6,7 +6,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <stddef.h>
 #include <_zvm/vm_ops.h>
 
 /**
@@ -16,9 +15,27 @@
  * parsing args. We can realize it under the help of zpehyr/lib/util/getopt.
  */
 
-
 int _create_vm(size_t argc, char **argv){
     /* Parse input args. */
+	struct getopt_state state = {1, 1, 0, 0, NULL, ""};
+	struct vm_input_params vm_params = {0, 0, ""};
+	int opt;
+
+	while ((opt = getopt(&state, argc, argv, "c:m:i:")) != -1) {
+		switch (opt) {
+		case 'c':
+			vm_params.vcpu_num = atoi(state.optarg);
+			break;
+		case 'm':
+			vm_params.vm_memory = atoi(state.optarg);
+			break;
+		case 'i':
+			vm_params.os_img_path = state.optarg;
+			break;
+		default:
+			return -EINVAL;
+		}
+	}
 
     return 0;
 }

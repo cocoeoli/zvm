@@ -8,5 +8,5 @@ add_subdirectory(zvm_host)
 
 zephyr_sources_ifdef(
     CONFIG_ZVM
-    shell.c
+    vm_shell.c
 )
