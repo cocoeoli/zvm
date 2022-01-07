@@ -1,0 +1,241 @@
+10a11,14
+> #include <zephyr/const.h>
+> 
+> #define sysreg_ops(op0, op1, crn, crm, op2) (((op0) << 19) | ((op1) << 16) | \
+> 	 ((crn) << 12) | ((crm) << 8) | ((op2) << 5))
+52c56
+< #define SCTLR_SA_BIT	BIT(3)
+---
+> #define SCTLR_SA_BIT		BIT(3)
+111a116,117
+> #define ID_AA64PFR0_GIC_SHIFT	(24)
+> #define ID_AA64PFR0_SVE_SHIFT	(32)
+112a119
+> #define ID_AA64PFR0_AMU_SHIFT	(44)
+114a122,123
+> 
+> 
+131a141
+> #define CPTR_EL2_TZ			(1 << 8)
+209a220,428
+> /*
+>  * Below code is to add some macor for EL2 init
+>  */
+> #define ENDIAN_SET_EL2		0
+> 
+> #define INIT_SCTLR_EL2_MMU_OFF (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
+> 
+> /* ID registers */
+> #define SYS_PMSIDR_EL1			sysreg_ops(3, 0, 9, 9, 7)
+> #define SYS_PMSIDR_EL1_FE_SHIFT		0
+> #define SYS_PMSIDR_EL1_FT_SHIFT		1
+> #define SYS_PMSIDR_EL1_FL_SHIFT		2
+> #define SYS_PMSIDR_EL1_ARCHINST_SHIFT	3
+> #define SYS_PMSIDR_EL1_LDS_SHIFT	4
+> #define SYS_PMSIDR_EL1_ERND_SHIFT	5
+> #define SYS_PMSIDR_EL1_INTERVAL_SHIFT	8
+> #define SYS_PMSIDR_EL1_INTERVAL_MASK	0xfUL
+> #define SYS_PMSIDR_EL1_MAXSIZE_SHIFT	12
+> #define SYS_PMSIDR_EL1_MAXSIZE_MASK	0xfUL
+> #define SYS_PMSIDR_EL1_COUNTSIZE_SHIFT	16
+> #define SYS_PMSIDR_EL1_COUNTSIZE_MASK	0xfUL
+> 
+> #define SYS_PMBIDR_EL1			sysreg_ops(3, 0, 9, 10, 7)
+> #define SYS_PMBIDR_EL1_ALIGN_SHIFT	0
+> #define SYS_PMBIDR_EL1_ALIGN_MASK	0xfU
+> #define SYS_PMBIDR_EL1_P_SHIFT		4
+> #define SYS_PMBIDR_EL1_F_SHIFT		5
+> 
+> /* Sampling controls */
+> #define SYS_PMSCR_EL1			sysreg_ops(3, 0, 9, 9, 0)
+> #define SYS_PMSCR_EL1_E0SPE_SHIFT	0
+> #define SYS_PMSCR_EL1_E1SPE_SHIFT	1
+> #define SYS_PMSCR_EL1_CX_SHIFT		3
+> #define SYS_PMSCR_EL1_PA_SHIFT		4
+> #define SYS_PMSCR_EL1_TS_SHIFT		5
+> #define SYS_PMSCR_EL1_PCT_SHIFT		6
+> 
+> #define SYS_PMSCR_EL2			sysreg_ops(3, 4, 9, 9, 0)
+> #define SYS_PMSCR_EL2_E0HSPE_SHIFT	0
+> #define SYS_PMSCR_EL2_E2SPE_SHIFT	1
+> #define SYS_PMSCR_EL2_CX_SHIFT		3
+> #define SYS_PMSCR_EL2_PA_SHIFT		4
+> #define SYS_PMSCR_EL2_TS_SHIFT		5
+> #define SYS_PMSCR_EL2_PCT_SHIFT		6
+> 
+> #define SYS_PMSICR_EL1			sysreg_ops(3, 0, 9, 9, 2)
+> 
+> #define SYS_PMSIRR_EL1			sysreg_ops(3, 0, 9, 9, 3)
+> #define SYS_PMSIRR_EL1_RND_SHIFT	0
+> #define SYS_PMSIRR_EL1_INTERVAL_SHIFT	8
+> #define SYS_PMSIRR_EL1_INTERVAL_MASK	0xffffffUL
+> 
+> /* TRBE Registers */
+> #define SYS_TRBLIMITR_EL1		sysreg_ops(3, 0, 9, 11, 0)
+> #define SYS_TRBPTR_EL1			sysreg_ops(3, 0, 9, 11, 1)
+> #define SYS_TRBBASER_EL1		sysreg_ops(3, 0, 9, 11, 2)
+> #define SYS_TRBSR_EL1			sysreg_ops(3, 0, 9, 11, 3)
+> #define SYS_TRBMAR_EL1			sysreg_ops(3, 0, 9, 11, 4)
+> #define SYS_TRBTRG_EL1			sysreg_ops(3, 0, 9, 11, 6)
+> #define SYS_TRBIDR_EL1			sysreg_ops(3, 0, 9, 11, 7)
+> 
+> #define SYS_LORSA_EL1			sysreg_ops(3, 0, 10, 4, 0)
+> #define SYS_LOREA_EL1			sysreg_ops(3, 0, 10, 4, 1)
+> #define SYS_LORN_EL1			sysreg_ops(3, 0, 10, 4, 2)
+> #define SYS_LORC_EL1			sysreg_ops(3, 0, 10, 4, 3)
+> #define SYS_LORID_EL1			sysreg_ops(3, 0, 10, 4, 7)
+> 
+> #define SYS_ICH_VSEIR_EL2		sysreg_ops(3, 4, 12, 9, 4)
+> #define SYS_ICH_SRE_EL2			sysreg_ops(3, 4, 12, 9, 5)
+> #define SYS_ICH_HCR_EL2			sysreg_ops(3, 4, 12, 11, 0)
+> #define SYS_ICH_VTR_EL2			sysreg_ops(3, 4, 12, 11, 1)
+> #define SYS_ICH_MISR_EL2		sysreg_ops(3, 4, 12, 11, 2)
+> #define SYS_ICH_EISR_EL2		sysreg_ops(3, 4, 12, 11, 3)
+> #define SYS_ICH_ELRSR_EL2		sysreg_ops(3, 4, 12, 11, 5)
+> #define SYS_ICH_VMCR_EL2		sysreg_ops(3, 4, 12, 11, 7)
+> 
+> #define SYS_SCTLR_EL2			sysreg_ops(3, 4, 1, 0, 0)
+> #define SYS_HFGRTR_EL2			sysreg_ops(3, 4, 1, 1, 4)
+> #define SYS_HFGWTR_EL2			sysreg_ops(3, 4, 1, 1, 5)
+> #define SYS_HFGITR_EL2			sysreg_ops(3, 4, 1, 1, 6)
+> #define SYS_ZCR_EL2			sysreg_ops(3, 4, 1, 2, 0)
+> #define SYS_TRFCR_EL2			sysreg_ops(3, 4, 1, 2, 1)
+> #define SYS_DACR32_EL2			sysreg_ops(3, 4, 3, 0, 0)
+> #define SYS_HDFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 4)
+> #define SYS_HDFGWTR_EL2			sysreg_ops(3, 4, 3, 1, 5)
+> #define SYS_HAFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 6)
+> #define SYS_SPSR_EL2			sysreg_ops(3, 4, 4, 0, 0)
+> #define SYS_ELR_EL2			sysreg_ops(3, 4, 4, 0, 1)
+> #define SYS_IFSR32_EL2			sysreg_ops(3, 4, 5, 0, 1)
+> #define SYS_ESR_EL2			sysreg_ops(3, 4, 5, 2, 0)
+> #define SYS_VSESR_EL2			sysreg_ops(3, 4, 5, 2, 3)
+> #define SYS_FPEXC32_EL2			sysreg_ops(3, 4, 5, 3, 0)
+> #define SYS_TFSR_EL2			sysreg_ops(3, 4, 5, 6, 0)
+> #define SYS_FAR_EL2			sysreg_ops(3, 4, 6, 0, 0)
+> 
+> #define TRBLIMITR_LIMIT_MASK		GENMASK_UL(51, 0)
+> #define TRBLIMITR_LIMIT_SHIFT		12
+> #define TRBLIMITR_NVM			BIT(5)
+> #define TRBLIMITR_TRIG_MODE_MASK	GENMASK(1, 0)
+> #define TRBLIMITR_TRIG_MODE_SHIFT	3
+> #define TRBLIMITR_FILL_MODE_MASK	GENMASK(1, 0)
+> #define TRBLIMITR_FILL_MODE_SHIFT	1
+> #define TRBLIMITR_ENABLE		BIT(0)
+> #define TRBPTR_PTR_MASK			GENMASK_UL(63, 0)
+> #define TRBPTR_PTR_SHIFT		0
+> #define TRBBASER_BASE_MASK		GENMASK_UL(51, 0)
+> #define TRBBASER_BASE_SHIFT		12
+> #define TRBSR_EC_MASK			GENMASK(5, 0)
+> #define TRBSR_EC_SHIFT			26
+> #define TRBSR_IRQ			BIT(22)
+> #define TRBSR_TRG			BIT(21)
+> #define TRBSR_WRAP			BIT(20)
+> #define TRBSR_ABORT			BIT(18)
+> #define TRBSR_STOP			BIT(17)
+> #define TRBSR_MSS_MASK			GENMASK(15, 0)
+> #define TRBSR_MSS_SHIFT			0
+> #define TRBSR_BSC_MASK			GENMASK(5, 0)
+> #define TRBSR_BSC_SHIFT			0
+> #define TRBSR_FSC_MASK			GENMASK(5, 0)
+> #define TRBSR_FSC_SHIFT			0
+> #define TRBMAR_SHARE_MASK		GENMASK(1, 0)
+> #define TRBMAR_SHARE_SHIFT		8
+> #define TRBMAR_OUTER_MASK		GENMASK(3, 0)
+> #define TRBMAR_OUTER_SHIFT		4
+> #define TRBMAR_INNER_MASK		GENMASK(3, 0)
+> #define TRBMAR_INNER_SHIFT		0
+> #define TRBTRG_TRG_MASK			GENMASK(31, 0)
+> #define TRBTRG_TRG_SHIFT		0
+> #define TRBIDR_FLAG			BIT(5)
+> #define TRBIDR_PROG			BIT(4)
+> #define TRBIDR_ALIGN_MASK		GENMASK(3, 0)
+> #define TRBIDR_ALIGN_SHIFT		0
+> 
+> /* id_aa64dfr0 */
+> #define ID_AA64DFR0_MTPMU_SHIFT		48
+> #define ID_AA64DFR0_TRBE_SHIFT		44
+> #define ID_AA64DFR0_TRACE_FILT_SHIFT	40
+> #define ID_AA64DFR0_DOUBLELOCK_SHIFT	36
+> #define ID_AA64DFR0_PMSVER_SHIFT	32
+> #define ID_AA64DFR0_CTX_CMPS_SHIFT	28
+> #define ID_AA64DFR0_WRPS_SHIFT		20
+> #define ID_AA64DFR0_BRPS_SHIFT		12
+> #define ID_AA64DFR0_PMUVER_SHIFT	8
+> #define ID_AA64DFR0_TRACEVER_SHIFT	4
+> #define ID_AA64DFR0_DEBUGVER_SHIFT	0
+> 
+> /* id_aa64mmfr0 */
+> #define ID_AA64MMFR0_ECV_SHIFT		60
+> #define ID_AA64MMFR0_FGT_SHIFT		56
+> #define ID_AA64MMFR0_EXS_SHIFT		44
+> #define ID_AA64MMFR0_TGRAN4_2_SHIFT	40
+> #define ID_AA64MMFR0_TGRAN64_2_SHIFT	36
+> #define ID_AA64MMFR0_TGRAN16_2_SHIFT	32
+> #define ID_AA64MMFR0_TGRAN4_SHIFT	28
+> #define ID_AA64MMFR0_TGRAN64_SHIFT	24
+> #define ID_AA64MMFR0_TGRAN16_SHIFT	20
+> #define ID_AA64MMFR0_BIGENDEL0_SHIFT	16
+> #define ID_AA64MMFR0_SNSMEM_SHIFT	12
+> #define ID_AA64MMFR0_BIGENDEL_SHIFT	8
+> #define ID_AA64MMFR0_ASID_SHIFT		4
+> #define ID_AA64MMFR0_PARANGE_SHIFT	0
+> 
+> /* id_aa64mmfr1 */
+> #define ID_AA64MMFR1_ETS_SHIFT		36
+> #define ID_AA64MMFR1_TWED_SHIFT		32
+> #define ID_AA64MMFR1_XNX_SHIFT		28
+> #define ID_AA64MMFR1_SPECSEI_SHIFT	24
+> #define ID_AA64MMFR1_PAN_SHIFT		20
+> #define ID_AA64MMFR1_LOR_SHIFT		16
+> #define ID_AA64MMFR1_HPD_SHIFT		12
+> #define ID_AA64MMFR1_VHE_SHIFT		8
+> #define ID_AA64MMFR1_VMIDBITS_SHIFT	4
+> #define ID_AA64MMFR1_HADBS_SHIFT	0
+> 
+> #define ID_AA64MMFR1_VMIDBITS_8		0
+> #define ID_AA64MMFR1_VMIDBITS_16	2
+> 
+> /* These are for GICv2 emulation only */
+> #define GICH_LR_VIRTUALID		(0x3ffUL << 0)
+> #define GICH_LR_PHYSID_CPUID_SHIFT	(10)
+> #define GICH_LR_PHYSID_CPUID		(7UL << GICH_LR_PHYSID_CPUID_SHIFT)
+> 
+> #define ICC_IAR1_EL1_SPURIOUS		0x3ff
+> 
+> 
+> 
+> /*
+>  * The ZCR_ELx_LEN_* definitions intentionally include bits [8:4] which
+>  * are reserved by the SVE architecture for future expansion of the LEN
+>  * field, with compatible semantics.
+>  */
+> #define ZCR_ELx_LEN_SHIFT	0
+> #define ZCR_ELx_LEN_SIZE	9
+> #define ZCR_ELx_LEN_MASK	0x1ff
+> 
+> 
+> 
+> /* This code will be moved to gic.h file in last stage! */
+> /* These are for GICv2 emulation only */
+> #define ICC_SRE_EL2_SRE			(1 << 0)
+> #define ICC_SRE_EL2_ENABLE		(1 << 3)
+> /*********************-------*******************************/
+> 
+> /*  This code will be moved to prace.h file in last stage! */
+> #define INIT_PSTATE_EL1  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000005)
+> #define INIT_PSTATE_EL2  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000009)
+> /***********************?
+> 
+> 
+210a430,440
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
