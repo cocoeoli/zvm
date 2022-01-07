@@ -8,7 +8,6 @@
 #define ZEPHYR_INCLUDE_ARCH_ARM64_CPU_H_
 
 #include <sys/util.h>
-#include <zephyr/const.h>
 
 #define sysreg_ops(op0, op1, crn, crm, op2) (((op0) << 19) | ((op1) << 16) | \
 	 ((crn) << 12) | ((crm) << 8) | ((op2) << 5))
@@ -423,7 +422,7 @@
 /*  This code will be moved to prace.h file in last stage! */
 #define INIT_PSTATE_EL1  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000005)
 #define INIT_PSTATE_EL2  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000009)
-/***********************?
+/***********************/
 
 
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_CPU_H_ */
