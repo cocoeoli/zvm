@@ -27,16 +27,16 @@ SECTION_SUBSEC_FUNC(image_header,_image_header_section,_image_header)
 	b	__start				// branch to kernel start
 	.long	0				// reserved
 	.quad	0				// Image load offset from start
-						// of RAM, little-endian
+							// of RAM, little-endian
 
-	.quad	_flash_used			// Effective size of kernel
-						// image, little-endian
+	.quad	_flash_used		// Effective size of kernel
+							// image, little-endian
 
-	.quad	HEADER_FLAGS			// Informative flags,
-						// little-endian
+	.quad	HEADER_FLAGS	// Informative flags,
+							// little-endian
 
 	.quad	0				// reserved
 	.quad	0				// reserved
 	.quad	0				// reserved
-	.ascii	"ARM\x64"			// Magic number
+	.ascii	"ARM\x64"		// Magic number
 	.long	0				// reserved

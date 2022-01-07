@@ -33,22 +33,30 @@ int _create_vm(size_t argc, char **argv){
 }
 
 int _set_vm(size_t argc, char **argv){
-	free(state);
-	free(vm_params);
-
 	/* Initial structure pointer. */
-	state = (struct getopt_state*)malloc(sizeof(struct getopt_state));
-	if(!state){
-		pr_err("Allocation memory Error!\n");
-		return -ENOMEM;
+	if(state == NULL){
+		/*
+		 * If state is NULL, which means this is first time to use this struct.
+		 * Then we should to initialize it by allocate memory for it. Otherwise, 
+		 * it means state has been used before and there is some specific value 
+		 * in it.   
+		 */
+		state = (struct getopt_state*)malloc(sizeof(struct getopt_state));
+		if(!state){
+			pr_err("Allocation memory Error!\n");
+			return -ENOMEM;
+		}
+		getopt_init(state);
 	}
-	getopt_init(state);
 
-	vm_params = (struct vm_input_params*)malloc(sizeof(struct vm_input_params));
-	if(!vm_params){
-		pr_err("Allocation memory Error!\n");
-		free(state);
-		return -ENOMEM;
+	if(vm_params == NULL){
+		vm_params = (struct vm_input_params*)malloc(	\
+							sizeof(struct vm_input_params));
+		if(!vm_params){
+			pr_err("Allocation memory Error!\n");
+			free(state);
+			return -ENOMEM;
+		}
 	}
 
     /* Parse input args. */

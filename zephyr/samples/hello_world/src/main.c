@@ -9,10 +9,11 @@
 #include <sys/printk.h>
 
 void main(void){
-	printk("Hello World! %s\n", CONFIG_BOARD);
-	char *s = "99";
-	printk("s = %s\n", s);
-	int c = atoi(s);
-	printk("i = %d\n", c);
-	return 0;
+	
+
+
+
+
+
+	
 }

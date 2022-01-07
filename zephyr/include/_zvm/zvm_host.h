@@ -16,7 +16,8 @@
 /**
  * @TODO We support SMP later. 
  */
-#define VM_MAX_VCPUS 1
+#define VM_MAX_VCPUS    1
+#define VM_MAX_NUM      10
 
 struct vcpu{
     /* Which vm this vCPU belongs to. */
@@ -26,7 +27,6 @@ struct vcpu{
 
     /* VM run info record. */
     struct zvm_run *run;
-
 };
 
 /**
@@ -37,14 +37,14 @@ struct vm {
     struct k_spinlock spinlock;
 
     /* Block memory allocated for this vm. */
-
     
+    int vm_id;
+
     struct zvm_arch arch;
 
     /* A array for collect vcpu. */
     struct vm_vcpu *vcpus[VM_MAX_VCPUS];
 };
-
 
 /*
  * ZVM manage structure. It equals to zvm_info_t and vm_info_t.  
@@ -72,11 +72,29 @@ struct vm {
  *  -> ...
  */
 struct zvm_manage_info{
-    zvm_info_t _zvm_info;
-    vm_info_t _vm_info; /* [] */
+    zvm_info_t zvm_basic_info;
+
+    /* Pointer array. */
+    vm_info_t *vm_basic_info[VM_MAX_NUM];
+    struct vm *vm[VM_MAX_NUM];
 };
 
+/* 
+ * Before we use zvm, we should initialize operation environment. The main works
+ * include:
+ *  -> arch realted initialization works
+ *  -> arch non-related initialzation works
+ *  -> ...
+ */
+int zvm_init(void);
 
-
+/*
+ * In this function, we should complete some tasks as below:
+ *  -> detect Hyp-mode(for ARMv8) is available
+ *  -> initialize vm related struct variables
+ *  -> Initialize memory mappings on all CPUs.
+ *  -> ...
+ */
+int zvm_arch_init(void);
 
 #endif /* ZVM_HOST_H__ */

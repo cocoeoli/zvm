@@ -32,15 +32,21 @@ extern "C" {
  * Before managing VMs, we need to make clear that how many resource available 
  * in current system. This information can be get from system device tree file.
  */
-#include <devicetree.h>
+
 #include <stdint.h>
+
+#include <arch/arm64/lib_helpers.h>
+#include <devicetree.h>
 #include <errno.h>
+#include <_zvm/debug/debug.h>
+
 
 #define SINGLE_CORE     1U
 #define MEMORY_NODE_ID  memory_40000000
 #define CPU_TYPENAME    DT_PROP_BY_IDX(DT_PATH(cpus, cpu_0), compatible, 0)
 #define MEMORY_SIZE     DT_REG_SIZE_BY_IDX(DT_PATH(soc, MEMORY_NODE_ID), 0)
 #define DT_MB           (1024 * 1024)
+#define HYP_MODE_LEVEL  2
 
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.

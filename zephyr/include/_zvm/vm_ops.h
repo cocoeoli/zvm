@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <cpu.h>
 #include <getopt.h>
 #include <_zvm/debug/debug.h>
 #include <shell/shell.h>
