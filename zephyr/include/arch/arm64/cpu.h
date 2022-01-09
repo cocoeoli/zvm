@@ -277,11 +277,7 @@
 #define SYS_TRBTRG_EL1			sysreg_ops(3, 0, 9, 11, 6)
 #define SYS_TRBIDR_EL1			sysreg_ops(3, 0, 9, 11, 7)
 
-#define SYS_LORSA_EL1			sysreg_ops(3, 0, 10, 4, 0)
-#define SYS_LOREA_EL1			sysreg_ops(3, 0, 10, 4, 1)
-#define SYS_LORN_EL1			sysreg_ops(3, 0, 10, 4, 2)
 #define SYS_LORC_EL1			sysreg_ops(3, 0, 10, 4, 3)
-#define SYS_LORID_EL1			sysreg_ops(3, 0, 10, 4, 7)
 
 #define SYS_ICH_VSEIR_EL2		sysreg_ops(3, 4, 12, 9, 4)
 #define SYS_ICH_SRE_EL2			sysreg_ops(3, 4, 12, 9, 5)
@@ -379,16 +375,11 @@
 #define ID_AA64MMFR0_PARANGE_SHIFT	0
 
 /* id_aa64mmfr1 */
-#define ID_AA64MMFR1_ETS_SHIFT		36
-#define ID_AA64MMFR1_TWED_SHIFT		32
-#define ID_AA64MMFR1_XNX_SHIFT		28
-#define ID_AA64MMFR1_SPECSEI_SHIFT	24
-#define ID_AA64MMFR1_PAN_SHIFT		20
-#define ID_AA64MMFR1_LOR_SHIFT		16
-#define ID_AA64MMFR1_HPD_SHIFT		12
-#define ID_AA64MMFR1_VHE_SHIFT		8
-#define ID_AA64MMFR1_VMIDBITS_SHIFT	4
-#define ID_AA64MMFR1_HADBS_SHIFT	0
+#define ID_AA64MMFR1_LOR_SHIFT		(16)
+#define ID_AA64MMFR1_HPD_SHIFT		(12)
+#define ID_AA64MMFR1_VHE_SHIFT		(8)
+#define ID_AA64MMFR1_VMIDBITS_SHIFT	(4)
+#define ID_AA64MMFR1_HADBS_SHIFT	(0)
 
 #define ID_AA64MMFR1_VMIDBITS_8		0
 #define ID_AA64MMFR1_VMIDBITS_16	2

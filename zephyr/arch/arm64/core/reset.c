@@ -5,6 +5,7 @@
  */
 
 #include <kernel_internal.h>
+#include <arch/cpu.h>
 #include "boot.h"
 
 void z_arm64_el2_init(void);
@@ -109,27 +110,65 @@ void z_arm64_el3_init(void)
 
 void z_arm64_el2_init(void)
 {
-	uint64_t reg;
+	uint64_t reg, reg1;
 
-	reg = read_sctlr_el2();
-	reg |= (SCTLR_EL2_RES1 |	/* RES1 */
-		SCTLR_I_BIT |		/* Enable i-cache */
-		SCTLR_SA_BIT);		/* Enable SP alignment check */
+	/* hcr_el2 flag set, for trap to hyp */
+	reg = HCR_HOST_NVHE_FLAGS;
+	write_hcr_el2();
+	isb();
+
+	/* Set EL2 mmu off */
+	reg = read_sctlr_el2();			//above code had init sctlr_el2, 
+	reg |= SCTLR_EL2_RES1; 
 	write_sctlr_el2(reg);
+	isb();
 
-	reg = read_hcr_el2();
-	reg |= HCR_RW_BIT;		/* EL1 Execution state is AArch64 */
-	write_hcr_el2(reg);
+	/* Enable EL1 physical timer and clear vitrtual offset */
+	reg = 3;
+	write_cnthctl_el2(reg);
+	reg = 0U;
+	write_voff_el2(reg);
 
-	reg = 0U;			/* RES0 */
-	reg |= CPTR_EL2_RES1;		/* RES1 */
-	reg &= ~(CPTR_TFP_BIT |		/* Do not trap SVE, SIMD and FP */
-		 CPTR_TCPAC_BIT);	/* Do not trap CPACR_EL1 accesses */
-	write_cptr_el2(reg);
+	/* Debug related init */
+	/* wait a minute ! */
 
-	zero_cntvoff_el2();		/* Set 64-bit virtual timer offset to 0 */
-	zero_cnthctl_el2();
-	zero_cnthp_ctl_el2();
+	/* Provides information about the implemented memory model and memory management support in AArch64 state.*/
+	reg1 = read_id_aa64mmfr1_el1();
+	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
+	if(!reg){					/* add some asm code */
+		reg1 = 0xd5000000 | SYS_LORC_EL1 ;
+		asm volatile(
+			"	.inst	%0 \n"
+			: 
+			: "r" (reg1) 
+			: "memory"
+		);
+	}
+
+	/* Stage-2 translation */
+	reg = 0U;
+	write_vttbr_el2(reg);
+
+	/* below with '//' is origin code */
+	//reg = read_sctlr_el2();
+	//reg |= (SCTLR_EL2_RES1 |	/* RES1 */
+	//	SCTLR_I_BIT |		/* Enable i-cache */
+	//	SCTLR_SA_BIT);		/* Enable SP alignment check */
+	//write_sctlr_el2(reg);
+
+	//reg = read_hcr_el2();
+	//reg |= HCR_RW_BIT;		/* EL1 Execution state is AArch64 */
+	//write_hcr_el2(reg);
+
+	//reg = 0U;			/* RES0 */
+	//reg |= CPTR_EL2_RES1;		/* RES1 */
+	//reg &= ~(CPTR_TFP_BIT |		/* Do not trap SVE, SIMD and FP */
+	//	 CPTR_TCPAC_BIT);	/* Do not trap CPACR_EL1 accesses */
+	//write_cptr_el2(reg);
+
+ 	//zero_cntvoff_el2();		/* Set 64-bit virtual timer offset to 0 */
+	//zero_cnthctl_el2();
+	//zero_cnthp_ctl_el2(); 
 	/*
 	 * Enable this if/when we use the hypervisor timer.
 	 * write_cnthp_cval_el2(~(uint64_t)0);
