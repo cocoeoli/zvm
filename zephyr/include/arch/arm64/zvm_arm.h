@@ -67,4 +67,41 @@
 #define HCR_HOST_NVHE_FLAGS (HCR_RW | HCR_API | HCR_APK | HCR_ATA)  /* Host os NVHE flag */
 
 
+/*this area is for .inst const in el2 init code*/
+//#define NSR_S_SYS_LOC_EL1   ((0xd5000000) | (SYS_LORC_EL1))
+
+
+
+/* Below two code is to slove the .inst bug 'assembler constant expression required' */
+#define __inst_const_exp(x...)  #x
+#define inst_const_exp(x...)    __inst_const_exp(x)
+#define __emit_inst(x)			".inst " inst_const_exp((x)) "\n\t"
+	
+
+/* Below codes is for test msr_s and mrs_s */
+
+#define MRS_S_MSR_S_REGNUM				\
+"	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30\n" \
+"	.equ	.reg_vnum_x\\num, \\num\n"			\
+"	.endr\n"						\
+"	.equ	.reg_vnum_xzr, 31\n"
+
+
+#define MRS_S(v, r)						\
+	MRS_S_MSR_S_REGNUM				\
+"	.macro	mrs_s, rt, sreg\n"				\
+	__emit_inst(0xd5200000|(\\sreg)|(.reg_vnum_\\rt))	\
+"	.endm\n"					\
+"	mrs_s " v ", " inst_const_exp(r) "\n"			\
+"	.purgem	mrs_s\n"
+
+#define MSR_S(r, v)						\
+	MRS_S_MSR_S_REGNUM				\
+"	.macro	msr_s, sreg, rt\n"				\
+	__emit_inst(0xd5000000|(\\sreg)|(.reg_vnum_\\rt))	\
+"	.endm\n"						\
+"	msr_s " inst_const_exp(r) ", " v "\n"			\
+"	.purgem	msr_s\n"
+
+
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_TPIDRRO_EL0_H_ */

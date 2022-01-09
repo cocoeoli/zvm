@@ -114,7 +114,7 @@ void z_arm64_el2_init(void)
 
 	/* hcr_el2 flag set, for trap to hyp */
 	reg = HCR_HOST_NVHE_FLAGS;
-	write_hcr_el2();
+	write_hcr_el2(reg);
 	isb();
 
 	/* Set EL2 mmu off */
@@ -127,27 +127,48 @@ void z_arm64_el2_init(void)
 	reg = 3;
 	write_cnthctl_el2(reg);
 	reg = 0U;
-	write_voff_el2(reg);
+	write_cntvoff_el2(reg);
 
 	/* Debug related init */
 	/* wait a minute ! */
 
 	/* Provides information about the implemented memory model and memory management support in AArch64 state.*/
-	reg1 = read_id_aa64mmfr1_el1();
+	// reg1 = read_id_aa64mmfr1_el1();		read_id_aa64mmfr1_el1 is not supported by this asm
+	__asm volatile(
+		"	mrs	%0,	id_aa64mmfr1_el1  \n"
+		: "=r" (reg1) : : "cc"
+	);
+	
 	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
 	if(!reg){					/* add some asm code */
-		reg1 = 0xd5000000 | SYS_LORC_EL1 ;
-		asm volatile(
-			"	.inst	%0 \n"
-			: 
-			: "r" (reg1) 
-			: "memory"
+		__asm volatile(
+			MSR_S(SYS_LORC_EL1, "xzr")
+			: : : 
 		);
 	}
 
 	/* Stage-2 translation */
 	reg = 0U;
-	write_vttbr_el2(reg);
+	__asm volatile(
+		"	msr	vttbr_el2,	xzr \n"
+		: : : "cc"
+	);
+	// write_vttbr_el2(reg); vttbr_el2 is not supported by this asm
+
+	/* GICv3 init sys_register access */
+	reg = read_id_aa64pfr0_el1();
+	reg = (((1U << (ID_AA64PFR0_GIC_SHIFT+4))-1) & reg1)>>ID_AA64PFR0_GIC_SHIFT;
+	if(reg){
+		__asm volatile(
+			MRS_S("%0", SYS_ICH_SRE_EL2)
+			: :"r" (reg) : "memory"
+		);
+		//reg1 = 0xd5200000 | reg | SYS_ICH_SRE_EL2;
+		//reg1 = reg1 |  ICC_SRE_EL2_SRE | ICC_SRE_EL2_ENABLE;
+		//reg1 = 0xd5000000 | SYS_ICH_SRE_EL2 | reg1;
+		//isb();
+	}
+
 
 	/* below with '//' is origin code */
 	//reg = read_sctlr_el2();
