@@ -136,7 +136,7 @@ void z_arm64_el2_init(void)
 	// reg1 = read_id_aa64mmfr1_el1();		read_id_aa64mmfr1_el1 is not supported by this asm
 	__asm volatile(
 		"	mrs	%0,	id_aa64mmfr1_el1  \n"
-		: "=r" (reg1) : : "cc"
+		: "=r" (reg1) : : "memory"
 	);
 	
 	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
@@ -151,7 +151,7 @@ void z_arm64_el2_init(void)
 	reg = 0U;
 	__asm volatile(
 		"	msr	vttbr_el2,	xzr \n"
-		: : : "cc"
+		: : : 
 	);
 	// write_vttbr_el2(reg); vttbr_el2 is not supported by this asm
 
@@ -163,11 +163,45 @@ void z_arm64_el2_init(void)
 			MRS_S("%0", SYS_ICH_SRE_EL2)
 			: :"r" (reg) : "memory"
 		);
-		//reg1 = 0xd5200000 | reg | SYS_ICH_SRE_EL2;
-		//reg1 = reg1 |  ICC_SRE_EL2_SRE | ICC_SRE_EL2_ENABLE;
-		//reg1 = 0xd5000000 | SYS_ICH_SRE_EL2 | reg1;
-		//isb();
+		reg = reg |  ICC_SRE_EL2_SRE | ICC_SRE_EL2_ENABLE;
+		__asm volatile(
+			MSR_S(SYS_ICH_SRE_EL2, "%0")
+			: :"r" (reg) : "memory"
+		);
+		isb();
+		__asm volatile(
+			MRS_S("%0", SYS_ICH_SRE_EL2)
+			: :"r" (reg) : "memory"
+		);
+		if(!(reg & 0x01))
+			return;
+		__asm volatile(
+			MSR_S(SYS_ICH_HCR_EL2, "xzr")
+			: : : "memory"
+		);
 	}
+
+	/* Disable CP15 trapping to EL2 of EL1 accesses to the System register  */
+	// wirte_hstr_el2(reg);		hstr_el2 not support
+	__asm volatile(
+		"	msr	hstr_el2,	xzr \n"
+		: : : 
+	);
+
+	/* Init vCPU id register */
+	// reg = read_midr_el1();	midr_el1 not support
+	__asm volatile(
+		"	mrs	%0,	midr_el1 \n"
+		:"=r" (reg): : "memory"
+	);
+	reg1 = read_mpidr_el1();
+	//write_vpidr_el2(reg);		vpidr_el2 not supported
+	__asm volatile(
+		"	msr	vpidr_el2,	%0 \n"
+		: : "r" (reg) : 
+	);
+	write_vmpidr_el2(reg1);
+
 
 
 	/* below with '//' is origin code */
