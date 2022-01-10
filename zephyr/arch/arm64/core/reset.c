@@ -110,7 +110,7 @@ void z_arm64_el3_init(void)
 
 void z_arm64_el2_init(void)
 {
-	uint64_t reg, reg1;
+	uint64_t reg, reg1, m_reg;
 
 	/* hcr_el2 flag set, for trap to hyp */
 	reg = HCR_HOST_NVHE_FLAGS;
@@ -157,7 +157,7 @@ void z_arm64_el2_init(void)
 
 	/* GICv3 init sys_register access */
 	reg = read_id_aa64pfr0_el1();
-	reg = (((1U << (ID_AA64PFR0_GIC_SHIFT+4))-1) & reg1)>>ID_AA64PFR0_GIC_SHIFT;
+	reg = (((1U << (ID_AA64PFR0_GIC_SHIFT+4))-1) & reg)>>ID_AA64PFR0_GIC_SHIFT;
 	if(reg){
 		__asm volatile(
 			MRS_S("%0", SYS_ICH_SRE_EL2)
@@ -202,7 +202,52 @@ void z_arm64_el2_init(void)
 	);
 	write_vmpidr_el2(reg1);
 
+	/* Controls trapping to EL2 of accesses to CPACR, CPACR_EL1, trace */
+	reg = 0x33ff;
+	write_cptr_el2(reg);
 
+	/* SVE register access */
+	/* This function is SVE related, which is not used in nvhe mode */
+	/* wait a minute */
+
+	/* Memory related traps */
+	reg1 = read_id_aa64mmfr0_el1();
+	m_reg = ID_AA64MMFR0_FGT_SHIFT;
+	reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
+	if(reg1){
+		reg = 0U;
+		//write_id_aa64dfr0_el1(reg1);	id_aa64dfr0_el1  not support
+		__asm volatile(
+			"	mrs	%0,	id_aa64dfr0_el1 \n"
+			:"=r" (reg1): : "memory"
+		);
+		m_reg = ID_AA64DFR0_PMSVER_SHIFT;
+		reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
+		if(reg1 >= 0x03){
+			m_reg = 1U;
+			reg = (reg | (m_reg<<62));
+		}
+	}
+	__asm volatile(
+		MSR_S(SYS_HDFGRTR_EL2, "%0") "\n"
+		MSR_S(SYS_HDFGWTR_EL2, "%0") "\n"
+		MSR_S(SYS_HFGRTR_EL2, "xzr") "\n"
+		MSR_S(SYS_HFGWTR_EL2, "xzr") "\n"
+		MSR_S(SYS_HFGITR_EL2, "xzr") 
+		: :"r" (reg) : "memory"
+	);
+	write_id_aa64pfr0_el1(reg1);
+	m_reg = ID_AA64PFR0_AMU_SHIFT;
+	reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
+	if(reg1){
+		__asm volatile(
+			MSR_S(SYS_HAFGRTR_EL2, "xzr") 
+			: : :
+		);
+	}
+
+	reg = INIT_PSTATE_EL1;
+	write_spsr_el2(reg);
 
 	/* below with '//' is origin code */
 	//reg = read_sctlr_el2();

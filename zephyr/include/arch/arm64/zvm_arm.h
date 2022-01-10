@@ -75,12 +75,12 @@
 /* Below two code is to slove the .inst bug 'assembler constant expression required' */
 #define __inst_const_exp(x...)  #x
 #define inst_const_exp(x...)    __inst_const_exp(x)
-#define __emit_inst(x)			".inst " inst_const_exp((x)) "\n\t"
+#define ___inst(x)			    ".inst " inst_const_exp((x)) "\n\t"
 	
-
+/* Below codes may have copyright risk */
 /* Below codes is for test msr_s and mrs_s */
 
-#define MRS_S_MSR_S_REGNUM				\
+#define MRS__MSR_S_REGNUM				\
 "	.irp	num,0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30\n" \
 "	.equ	.reg_vnum_x\\num, \\num\n"			\
 "	.endr\n"						\
@@ -88,20 +88,21 @@
 
 
 #define MRS_S(v, r)						\
-	MRS_S_MSR_S_REGNUM				\
-"	.macro	mrs_s, rt, sreg\n"				\
-	__emit_inst(0xd5200000|(\\sreg)|(.reg_vnum_\\rt))	\
+	MRS__MSR_S_REGNUM				\
+"	.macro	mrs_ivs, rt, sreg\n"				\
+	___inst(0xd5200000|(\\sreg)|(.reg_vnum_\\rt))	\
 "	.endm\n"					\
-"	mrs_s " v ", " inst_const_exp(r) "\n"			\
-"	.purgem	mrs_s\n"
+"	mrs_ivs " v ", " inst_const_exp(r) "\n"			\
+"	.purgem	mrs_ivs\n"
 
 #define MSR_S(r, v)						\
-	MRS_S_MSR_S_REGNUM				\
-"	.macro	msr_s, sreg, rt\n"				\
-	__emit_inst(0xd5000000|(\\sreg)|(.reg_vnum_\\rt))	\
+	MRS__MSR_S_REGNUM				\
+"	.macro	msr_ivs, sreg, rt\n"				\
+	___inst(0xd5000000|(\\sreg)|(.reg_vnum_\\rt))	\
 "	.endm\n"						\
-"	msr_s " inst_const_exp(r) ", " v "\n"			\
-"	.purgem	msr_s\n"
+"	msr_ivs " inst_const_exp(r) ", " v "\n"			\
+"	.purgem	msr_ivs\n"
+/* Above codes may have copyright risk */
 
 
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_TPIDRRO_EL0_H_ */
