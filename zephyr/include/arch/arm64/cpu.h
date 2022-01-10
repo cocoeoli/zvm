@@ -9,9 +9,6 @@
 
 #include <sys/util.h>
 
-#define sysreg_ops(op0, op1, crn, crm, op2) (((op0) << 19) | ((op1) << 16) | \
-	 ((crn) << 12) | ((crm) << 8) | ((op2) << 5))
-
 #define DAIFSET_FIQ_BIT		BIT(0)
 #define DAIFSET_IRQ_BIT		BIT(1)
 #define DAIFSET_ABT_BIT		BIT(2)
@@ -225,21 +222,22 @@
 #define INIT_SCTLR_EL2_MMU_OFF (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
 
 /* TRBE Registers */
-#define SYS_LORC_EL1			sysreg_ops(3, 0, 10, 4, 3)
-#define SYS_ICH_SRE_EL2			sysreg_ops(3, 4, 12, 9, 5)
-#define SYS_ICH_VSEIR_EL2		sysreg_ops(3, 4, 12, 9, 4)
-#define SYS_ICH_HCR_EL2			sysreg_ops(3, 4, 12, 11, 0)
+/* Below codes may be change to original status in next stage */
+#define SYS_LORC_EL1			S3_0_C10_C4_3
+#define SYS_ICH_SRE_EL2			S3_4_C12_C9_5
+#define SYS_ICH_VSEIR_EL2		S3_4_C12_C9_4
+#define SYS_ICH_HCR_EL2			S3_4_C12_C11_0
 
-#define SYS_SCTLR_EL2			sysreg_ops(3, 4, 1, 0, 0)
-#define SYS_HAFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 6)
-#define SYS_HFGRTR_EL2			sysreg_ops(3, 4, 1, 1, 4)
-#define SYS_HFGWTR_EL2			sysreg_ops(3, 4, 1, 1, 5)
-#define SYS_HFGITR_EL2			sysreg_ops(3, 4, 1, 1, 6)
-#define SYS_ZCR_EL2				sysreg_ops(3, 4, 1, 2, 0)
-#define SYS_TRFCR_EL2			sysreg_ops(3, 4, 1, 2, 1)
-#define SYS_DACR32_EL2			sysreg_ops(3, 4, 3, 0, 0)
-#define SYS_HDFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 4)
-#define SYS_HDFGWTR_EL2			sysreg_ops(3, 4, 3, 1, 5)
+#define SYS_SCTLR_EL2			S3_4_C1_C0_0
+#define SYS_HAFGRTR_EL2			S3_4_C3_C1_6
+#define SYS_HFGRTR_EL2			S3_4_C1_C1_4
+#define SYS_HFGWTR_EL2			S3_4_C1_C1_5
+#define SYS_HFGITR_EL2			S3_4_C1_C1_6
+#define SYS_ZCR_EL2				S3_4_C1_C2_0
+#define SYS_TRFCR_EL2			S3_4_C1_C2_1
+#define SYS_DACR32_EL2			S3_4_C3_C0_0
+#define SYS_HDFGRTR_EL2			S3_4_C3_C1_4
+#define SYS_HDFGWTR_EL2			S3_4_C3_C1_5
 
 /* id_aa64dfr0 */
 #define ID_AA64DFR0_PMSVER_SHIFT		(32)
@@ -252,10 +250,9 @@
 
 /* These are for GICv2 emulation only */
 #define GICH_LR_VIRTUALID				(0x3ffUL << 0)
-#define GICH_LR_PHYSID_CPUID_SHIFT		(10)
-#define GICH_LR_PHYSID_CPUID			(7UL << GICH_LR_PHYSID_CPUID_SHIFT)
+#define GICH_LR_PHYSID_CPUID			(7UL << 10)
 
-#define ICC_IAR1_EL1_SPURIOUS			0x3ff
+#define ICC_IAR1_EL1_SPURIOUS			(0x3ff)
 
 
 /*
@@ -263,9 +260,9 @@
  * are reserved by the SVE architecture for future expansion of the LEN
  * field, with compatible semantics.
  */
-#define ZCR_ELx_LEN_SHIFT	0
-#define ZCR_ELx_LEN_SIZE	9
-#define ZCR_ELx_LEN_MASK	0x1ff
+#define ZCR_ELx_LEN_SHIFT				(0)
+#define ZCR_ELx_LEN_SIZE				(9)
+#define ZCR_ELx_LEN_MASK				(0x1ff)
 
 
 
@@ -282,14 +279,3 @@
 /* Above codes may have copyright risk */
 
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_CPU_H_ */
-
-
-
-
-
-
-
-
-
-
-
