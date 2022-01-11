@@ -246,6 +246,7 @@ void z_arm64_el2_init(void)
 		);
 	}
 
+	/* Set Exception type to EL1h */
 	reg = INIT_PSTATE_EL1;
 	write_spsr_el2(reg);
 
@@ -287,6 +288,7 @@ void z_arm64_el1_init(void)
 	write_vbar_el1((uint64_t)_vector_table);
 	isb();
 
+	/* when el2 is implemnted, cpacr_el1 is not work */
 	reg = 0U;			/* RES0 */
 	reg |= CPACR_EL1_FPEN_NOTRAP;	/* Do not trap NEON/SIMD/FP initially */
 					/* TODO: CONFIG_FLOAT_*_FORBIDDEN */
