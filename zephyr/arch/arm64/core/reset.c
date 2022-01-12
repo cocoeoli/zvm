@@ -142,7 +142,7 @@ void z_arm64_el2_init(void)
 	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
 	if(!reg){					/* add some asm code */
 		__asm volatile(
-			MSR_S(SYS_LORC_EL1, "xzr")
+			MSR_S(LORC_EL1, "xzr")
 			: : : 
 		);
 	}
@@ -156,27 +156,27 @@ void z_arm64_el2_init(void)
 	// write_vttbr_el2(reg); vttbr_el2 is not supported by this asm
 
 	/* GICv3 init sys_register access */
-	reg = read_id_aa64pfr0_el1();
+	reg = read_id_aa64pfr0_el1();		
 	reg = (((1U << (ID_AA64PFR0_GIC_SHIFT+4))-1) & reg)>>ID_AA64PFR0_GIC_SHIFT;
 	if(reg){
 		__asm volatile(
-			MRS_S("%0", SYS_ICH_SRE_EL2)
+			MRS_S("%0", ICH_SRE_EL2)
 			: :"r" (reg) : "memory"
 		);
 		reg = reg |  ICC_SRE_EL2_SRE | ICC_SRE_EL2_ENABLE;
 		__asm volatile(
-			MSR_S(SYS_ICH_SRE_EL2, "%0")
+			MSR_S(ICH_SRE_EL2, "%0")
 			: :"r" (reg) : "memory"
 		);
 		isb();
 		__asm volatile(
-			MRS_S("%0", SYS_ICH_SRE_EL2)
+			MRS_S("%0", ICH_SRE_EL2)
 			: :"r" (reg) : "memory"
 		);
 		if(!(reg & 0x01))
 			return;
 		__asm volatile(
-			MSR_S(SYS_ICH_HCR_EL2, "xzr")
+			MSR_S(ICH_HCR_EL2, "xzr")
 			: : : "memory"
 		);
 	}
@@ -229,19 +229,19 @@ void z_arm64_el2_init(void)
 		}
 	}
 	__asm volatile(
-		MSR_S(SYS_HDFGRTR_EL2, "%0") "\n"
-		MSR_S(SYS_HDFGWTR_EL2, "%0") "\n"
-		MSR_S(SYS_HFGRTR_EL2, "xzr") "\n"
-		MSR_S(SYS_HFGWTR_EL2, "xzr") "\n"
-		MSR_S(SYS_HFGITR_EL2, "xzr") 
+		MSR_S(HDFGRTR_EL2, "%0") "\n"
+		MSR_S(HDFGWTR_EL2, "%0") "\n"
+		MSR_S(HFGRTR_EL2, "xzr") "\n"
+		MSR_S(HFGWTR_EL2, "xzr") "\n"
+		MSR_S(HFGITR_EL2, "xzr") 
 		: :"r" (reg) : "memory"
 	);
-	write_id_aa64pfr0_el1(reg1);
+	reg1 = read_id_aa64pfr0_el1();
 	m_reg = ID_AA64PFR0_AMU_SHIFT;
 	reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
 	if(reg1){
 		__asm volatile(
-			MSR_S(SYS_HAFGRTR_EL2, "xzr") 
+			MSR_S(HAFGRTR_EL2, "xzr") 
 			: : :
 		);
 	}

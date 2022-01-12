@@ -154,7 +154,7 @@ switch_el:
 	bl	z_arm64_el2_init
 
 	/* Add hyp_vecotr: _hyp_stg1_vector_table */
-	adr_l	x0, _hyp_stg1_vector_table
+	adr		x0, _hyp_stg1_vector_table
 	msr		vbar_el2,	x0
 	isb
 
