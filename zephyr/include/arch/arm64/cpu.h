@@ -217,27 +217,31 @@
 /*
  * Below code is to add some macor for EL2 init
  */
+/* sysreg_ops for c code asm extention */
+#define sysreg_ops(op0, op1, crn, crm, op2) (((op0) << 19) | ((op1) << 16) | \
+	 ((crn) << 12) | ((crm) << 8) | ((op2) << 5))
+
 #define ENDIAN_SET_EL2		 (0)
 
 #define INIT_SCTLR_EL2_MMU_OFF (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
 
 /* TRBE Registers */
 /* Below codes may be change to original status in next stage */
-#define SYS_LORC_EL1			S3_0_C10_C4_3
-#define SYS_ICH_SRE_EL2			S3_4_C12_C9_5
+#define LORC_EL1			sysreg_ops(3, 0, 10, 4, 3)
+#define ICH_SRE_EL2			sysreg_ops(3, 4, 12, 9, 5)
 #define SYS_ICH_VSEIR_EL2		S3_4_C12_C9_4
-#define SYS_ICH_HCR_EL2			S3_4_C12_C11_0
+#define ICH_HCR_EL2			sysreg_ops(3, 4, 12, 11, 0)
 
 #define SYS_SCTLR_EL2			S3_4_C1_C0_0
-#define SYS_HAFGRTR_EL2			S3_4_C3_C1_6
-#define SYS_HFGRTR_EL2			S3_4_C1_C1_4
-#define SYS_HFGWTR_EL2			S3_4_C1_C1_5
-#define SYS_HFGITR_EL2			S3_4_C1_C1_6
+#define HAFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 6)
+#define HFGRTR_EL2			sysreg_ops(3, 4, 1, 1, 4)
+#define HFGWTR_EL2			sysreg_ops(3, 4, 1, 1, 5)
+#define HFGITR_EL2			sysreg_ops(3, 4, 1, 1, 6)
 #define SYS_ZCR_EL2				S3_4_C1_C2_0
 #define SYS_TRFCR_EL2			S3_4_C1_C2_1
 #define SYS_DACR32_EL2			S3_4_C3_C0_0
-#define SYS_HDFGRTR_EL2			S3_4_C3_C1_4
-#define SYS_HDFGWTR_EL2			S3_4_C3_C1_5
+#define HDFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 4)
+#define HDFGWTR_EL2			sysreg_ops(3, 4, 3, 1, 5)
 
 /* id_aa64dfr0 */
 #define ID_AA64DFR0_PMSVER_SHIFT		(32)
