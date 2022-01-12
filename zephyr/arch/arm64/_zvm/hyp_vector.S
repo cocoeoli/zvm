@@ -8,8 +8,10 @@
 #include <toolchain.h>
 #include <linker/sections.h>
 #include <offsets.h>
+#include <arch/cpu.h>
 
 _ASM_FILE_PROLOGUE
+
 
 GDATA(_hyp_stg1_vector_table)
 SECTION_SUBSEC_FUNC(exc_vector_table,_vector_table_section,_hyp_stg1_vector_table)
@@ -72,7 +74,7 @@ SECTION_SUBSEC_FUNC(exc_vector_table,_vector_table_section,_hyp_stg1_vector_tabl
 
 GTEXT(z_hyp_sync_exc)
 SECTION_FUNC(TEXT, z_hyp_sync_exc)
-    mrs x9 #0x08
+    mov x9, #0x08
 	eret
 
 	
