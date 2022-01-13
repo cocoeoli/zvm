@@ -40,7 +40,8 @@ static uint64_t *new_table(void)
 	for (i = 0U; i < CONFIG_MAX_XLAT_TABLES; i++) {
 		if (xlat_use_count[i] == 0U) {
 			xlat_use_count[i] = 1U;
-			return &xlat_tables[i * Ln_XLAT_NUM_ENTRIES];
+			/* each table assign 512 entrys */
+			return &xlat_tables[i * Ln_XLAT_NUM_ENTRIES];	
 		}
 	}
 
@@ -227,6 +228,7 @@ static uint64_t *expand_to_table(uint64_t *pte, unsigned int level)
 	return table;
 }
 
+/* set mmu mapping */
 static int set_mapping(struct arm_mmu_ptables *ptables,
 		       uintptr_t virt, size_t size,
 		       uint64_t desc, bool may_overwrite)
@@ -643,7 +645,7 @@ struct arm_mmu_flat_range {
 	char *name;
 	void *start;
 	void *end;
-	uint32_t attrs;
+	uint32_t attrs;					/* operation flag */
 };
 
 static const struct arm_mmu_flat_range mmu_zephyr_ranges[] = {
@@ -724,6 +726,7 @@ static void setup_page_tables(struct arm_mmu_ptables *ptables)
 		 "Maximum VA not supported\n");
 	__ASSERT(max_pa <= (1ULL << CONFIG_ARM64_PA_BITS),
 		 "Maximum PA not supported\n");
+	/* Above code init the idmap from va to pa */ 
 
 	/* setup translation table for zephyr execution regions */
 	for (index = 0U; index < ARRAY_SIZE(mmu_zephyr_ranges); index++) {

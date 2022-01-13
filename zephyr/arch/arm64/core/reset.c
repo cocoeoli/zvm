@@ -110,7 +110,8 @@ void z_arm64_el3_init(void)
 
 void z_arm64_el2_init(void)
 {
-	uint64_t reg, reg1, m_reg;
+	bool this_reg_flag = false;			/* reg flag */
+	uint64_t reg, reg1, m_reg;			/* 64bit register */
 
 	/* hcr_el2 flag set, for trap to hyp */
 	reg = HCR_HOST_NVHE_FLAGS;
@@ -130,7 +131,52 @@ void z_arm64_el2_init(void)
 	write_cntvoff_el2(reg);
 
 	/* Debug related init */
-	/* wait a minute ! */
+	reg1 = read_id_aa64mmfr0_el1();
+	__asm volatile(
+		"	sbfx	%0, %1, #ID_AA64DFR0_PMUVER_SHIFT, #4 \n"
+		:"=r" (reg) :"r" (reg1) : "memory" 
+	);
+	if(reg >= 1){
+		reg = read_pmcr_el0();
+		reg = (((1U << (16))-1) & reg)>>11;
+		this_reg_flag = true;
+	}
+	if(this_reg_flag){
+		m_reg = 0;
+	}else
+		m_reg = reg;
+	reg = (((1U << (ID_AA64DFR0_PMSVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMSVER_SHIFT;
+	if(reg){
+		__asm volatile(
+			MRS_S("%0", SYS_PMBIDR_EL1)
+			: :"r" (reg) : "memory"
+		);
+		reg = reg & (1U << SYS_PMBIDR_EL1_P_SHIFT);
+		if(!reg){
+			reg =  (1U << SYS_PMSCR_EL2_PA_SHIFT) | (1U << SYS_PMSCR_EL2_PCT_SHIFT);
+			__asm volatile(
+				MSR_S(SYS_PMSCR_EL2, reg)
+				: : : 
+			);
+		}
+		reg = MDCR_EL2_E2PB_MASK << MDCR_EL2_E2PB_SHIFT;
+		m_reg = reg | m_reg;
+	}
+	reg = (((1U << (ID_AA64DFR0_TRBE_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_TRBE_SHIFT;
+	if(reg){
+		__asm volatile(
+			MRS_S("%0", SYS_TRBIDR_EL1)
+			: :"r" (reg) : "memory"
+		);
+		reg = reg & TRBIDR_PROG;
+		if(!reg){
+			reg = MDCR_EL2_E2PB_MASK << MDCR_EL2_E2TB_SHIFT;
+			m_reg = reg | m_reg;
+		}
+	}
+	write_mdcr_el2(m_reg);
+
+
 
 	/* Provides information about the implemented memory model and memory management support in AArch64 state.*/
 	// reg1 = read_id_aa64mmfr1_el1();		read_id_aa64mmfr1_el1 is not supported by this asm
@@ -138,7 +184,6 @@ void z_arm64_el2_init(void)
 		"	mrs	%0,	id_aa64mmfr1_el1  \n"
 		: "=r" (reg1) : : "memory"
 	);
-	
 	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
 	if(!reg){					/* add some asm code */
 		__asm volatile(
