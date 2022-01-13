@@ -18,10 +18,6 @@
 #ifndef ZVM_H__
 #define ZVM_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
 #ifndef CONFIG_ZVM
 #define CONFIG_ZVM
 #endif 
@@ -35,18 +31,13 @@ extern "C" {
 
 #include <stdint.h>
 
-#include <arch/arm64/lib_helpers.h>
 #include <devicetree.h>
 #include <errno.h>
 #include <_zvm/debug/debug.h>
 
-
 #define SINGLE_CORE     1U
 #define MEMORY_NODE_ID  memory_40000000
-#define CPU_TYPENAME    DT_PROP_BY_IDX(DT_PATH(cpus, cpu_0), compatible, 0)
-#define MEMORY_SIZE     DT_REG_SIZE_BY_IDX(DT_PATH(soc, MEMORY_NODE_ID), 0)
 #define DT_MB           (1024 * 1024)
-#define HYP_MODE_LEVEL  2
 
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.
@@ -56,7 +47,7 @@ extern "C" {
  * devices we do not care currently. Then we need a structure to store basic 
  * information of hardware.
  */
-struct zvm_info{
+struct zvm_info {
     /* Number of vm in system, vm's number starts from 1. */
     uint16_t vm_total_num;
 
@@ -73,8 +64,7 @@ struct zvm_info{
     char *cpu_type;
 };
 
-typedef struct zvm_info zvm_info_t;
-static zvm_info_t sys_info;
+extern struct zvm_info sys_info;
 
 /**
  * @brief Get number of physical cpu and its typename.
@@ -83,7 +73,7 @@ static zvm_info_t sys_info;
  * @return If get number of physical cpu and typename success, then return 0; 
  * else return error code.
  */
-int __dt_get_cpu_info(zvm_info_t *sys_info);
+int __dt_get_cpu_info(struct zvm_info *sys_info);
 
 /**
  * @brief Get physical memory size.
@@ -91,8 +81,7 @@ int __dt_get_cpu_info(zvm_info_t *sys_info);
  * Through devicetree macro and pass value into system information structure.
  * @return If get memory size success, then return 0; else return error code.
  */
-int __dt_get_mem_size(zvm_info_t *sys_info);
-
+int __dt_get_mem_size(struct zvm_info *sys_info);
 
 /**
  * @brief Structure zvm_info initial.
@@ -100,15 +89,70 @@ int __dt_get_mem_size(zvm_info_t *sys_info);
  * Call last two functions to initialize zvm_info.
  * @return If initialize zvm_info success return 0, else return error code.
  */
-int __zvm_info_init(zvm_info_t *sys_info);
+int __zvm_info_init(struct zvm_info *sys_info);
 
 /**
  * @brief Print zvm_info structure.
  */
-void zvm_info_print(zvm_info_t *sys_info);
+void zvm_info_print(struct zvm_info *sys_info);
 
-#ifdef __cplusplus
+/*
+ * @brief ZVM manage structure.   
+ * 
+ * As a hypervisor, zvm should know how much resouce it can use and how many vm 
+ * it carries. 
+ * At first aspect, File subsys/_zvm_zvm_host/zvm_host.c can get hardware info
+ * from devicetree file. We construct corresponding data structure type 
+ * "struct zvm_info" to store it. "struct zvm_info" includes: 
+ *  -> the number of total vm
+ *  -> the number of physical CPU
+ *  -> system's CPU typename
+ *  -> the number of physical memory
+ *  -> how much physical memory has been used
+ * and so on.
+ * At second aspect, we should konw what kind of resource vm possess is proper. 
+ * Then we construct a proper data structure, just like "vm_info_t", to describe 
+ * it. It includes information as below:
+ *  -> ...
+ */
+struct zvm_manage_info {
+    struct zvm_info zvm_basic_info;
+
+    struct vm *vms[CONFIG_MAX_VM_NUM];      // This should be replace by list.
+
+    /* 
+     * This value is current smallest vmid which can be allocated. It's default 
+     * value is 0. Everytime create a new vm, we will allocate a vmid for it.
+     * The allocation value is this. Conversely, everytime delete/destroy a vm,
+     * we will recycle vmid and compare with this value.  
+     */
+    int next_alloc_vmid;
+};
+
+/* This struct variable should be init in function zvm_init(). */
+extern struct zvm_manage_info *zvm_overall_info;   
+
+static inline bool vm_num_full(){
+    return (zvm_overall_info->next_alloc_vmid == CONFIG_MAX_VM_NUM);
 }
-#endif
+
+/* 
+ * Before we use zvm, we should initialize operation environment. The main works
+ * include:
+ *  -> Arch realted initialization works
+ *  -> Arch non-related initialzation works
+ *  -> Initialize struct variable "zvm_overall_info"
+ *  -> ...
+ */
+int zvm_init(void);
+
+/*
+ * In this function, we should complete some tasks as below:
+ *  -> detect Hyp-mode(for ARMv8) is available
+ *  -> initialize vm related struct variables
+ *  -> Initialize memory mappings on all CPUs.
+ *  -> ...
+ */
+int zvm_arch_init(void);
 
 #endif /* ZVM_H__ */

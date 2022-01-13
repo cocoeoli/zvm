@@ -9,7 +9,7 @@
 #include <zephyr.h>
 #include <shell/shell.h>
 #include <_zvm/debug/debug.h>
-#include <_zvm/vm_ops.h>
+#include <_zvm/vm/vm_ops.h>
 
 #define SHELL_HELP_ZVM "ZVM manager command. " \
     "Some subcommand you can choice as below:"  \
@@ -39,11 +39,10 @@ static int cmd_zvm_new(const struct shell *shell, size_t argc, char **argv){
 
 static int cmd_zvm_set(const struct shell *shell, size_t argc, char **argv){
     shell_fprintf(shell, SHELL_NORMAL, "Set vm's configuration...\n");
-    int ret = _set_vm(argc, argv);
-
+    int ret = 0;
     if(ret){
         /* Set vm failure. */ 
-        pr_err("The return value from _set_vm(): %d\n", ret);
+        pr_err("The return value: %d\n", ret);
         return -EAGAIN;
     }else{
         shell_fprintf(shell, SHELL_NORMAL, "Set vm's configuration success.\n");

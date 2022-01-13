@@ -7,11 +7,3 @@
  */
 
 #include <_zvm/asm/virt.h>
-
-int init_hyp_mode(void){
-    
-}
-
-
-
-

@@ -6,11 +6,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <_zvm/zvm.h>
+#include <arch/cpu.h>
+#include <arch/arm64/lib_helpers.h>
 #include <sys/printk.h>
+#include <_zvm/asm/virt.h>
+#include <_zvm/zvm.h>
 
 
-int __dt_get_cpu_info(zvm_info_t *sys_info){
+struct zvm_info sys_info;
+struct zvm_manage_info *zvm_overall_info; 
+
+int __dt_get_cpu_info(struct zvm_info *sys_info){
     /* System's cpu number can get from CONFIG args. */
 #ifdef CONFIG_SMP
     sys_info->phy_cpu_num = CONFIG_MP_NUM_CPUS;
@@ -18,23 +24,23 @@ int __dt_get_cpu_info(zvm_info_t *sys_info){
     sys_info->phy_cpu_num = SINGLE_CORE;
 #endif
     /* node-id : DT_PATH(cpus, cpu_0) */
-    sys_info->cpu_type = CPU_TYPENAME;
+    sys_info->cpu_type = DT_PROP_BY_IDX(DT_PATH(cpus, cpu_0), compatible, 0);
     if(sys_info->cpu_type == NULL)
         return -EINVAL;
 
     return 0;
 }
 
-int __dt_get_mem_size(zvm_info_t *sys_info){
+int __dt_get_mem_size(struct zvm_info *sys_info){
     /* node-id :  */
-    sys_info->phy_mem = MEMORY_SIZE;
+    sys_info->phy_mem = DT_REG_SIZE_BY_IDX(DT_PATH(soc, MEMORY_NODE_ID), 0);
     if(sys_info->phy_mem == 0)
         return -EINVAL;
 
     return 0;
 }
  
-int __zvm_info_init(zvm_info_t *sys_info){
+int __zvm_info_init(struct zvm_info *sys_info){
     sys_info->vm_total_num = 0;
     sys_info->phy_mem_used = 0;
     sys_info->cpu_type = NULL;
@@ -48,7 +54,7 @@ int __zvm_info_init(zvm_info_t *sys_info){
     return 0;
 }
 
-void zvm_info_print(zvm_info_t *sys_info){
+void zvm_info_print(struct zvm_info *sys_info){
     printk(">---- System's information ----<\n");
     printk("  All phy-cpu: %d\n", sys_info->phy_cpu_num);
     printk("  CPU's type : %s\n", sys_info->cpu_type);
@@ -58,25 +64,23 @@ void zvm_info_print(zvm_info_t *sys_info){
     printk(">------------------------------<\n");
 }
 
-/*struct zvm_manage_info z_manage_info;*/
-
 int zvm_init(void){
     /*  */
     return 0;
 }
 
 int zvm_arch_init(void){
-    int ret, err;
+    int ret = 0, err;
 
     /* Detect hyp mode available. */
-    if(!is_el_implemented(HYP_MODE_LEVEL)){
+    if(!is_el_implemented(2)){
         pr_err("Hyp mode not available.\n");
         return -ENODEV;
     }
 
     /* Detect current EL is EL2. */
    	int curr_el = GET_EL(read_currentel());
-    if(curr_el != HYP_MODE_LEVEL){
+    if(curr_el != 2){
         pr_err("Current EL is not EL2.\n");
         return -ENODEV;
     }
@@ -88,5 +92,5 @@ int zvm_arch_init(void){
         return err;
     }
     
-    return 0;
+    return ret;
 }

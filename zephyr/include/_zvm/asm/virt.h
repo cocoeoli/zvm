@@ -9,11 +9,21 @@
 #ifndef ZVM_ASM_VIRT_H__
 #define ZVM_ASM_VIRT_H__
 
-/*
+/**
  * @file arch, armv8, virtualization, initialization
  */
 
 #define SCTLR_EL2_VALUE	0x30c51878
+
+#include <stdint.h>
+
+#include <arch/cpu.h>
+#include <arch/arm64/lib_helpers.h>
+
+/* Judge whether current exception level is EL2. */
+static inline bool is_el2_now(void){
+    return (MODE_EL2 == GET_EL(read_currentel()));
+}
 
 /*
  * @brief Initial EL2 registers.
@@ -24,7 +34,5 @@
  *  -> 
  */
 int init_hyp_mode(void);
-
-
 
 #endif  /* ZVM_ASM_VIRT_H__ */

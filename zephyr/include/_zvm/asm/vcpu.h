@@ -25,7 +25,7 @@ struct user_pt_regs{
     uint64_t sp;
     uint64_t pc;
     uint64_t pstate;
-}
+};
 
 /* EL0&1 registers for vm. */
 struct zvm_regs{
@@ -41,24 +41,24 @@ struct zvm_regs{
     /**
      * @TODO Floating-point regs we add later. 
      */
-}
+};
 
 #endif /* _ASMLANGUAGE */
 
-struct zvm_vcpu_context {
+struct vcpu_context {
     struct zvm_regs gp_regs;
     union{
         uint64_t sys_regs[NR_SYS_REGS];
-        uint32_t copro[NR_COPRO_REGS]
-    }    
-}
+        uint32_t copro[NR_COPRO_REGS];
+    };    
+};
 
-typedef struct zvm_vcpu_context zvm_vcpu_context_t;
+typedef struct vcpu_context vcpu_context_t;
 
 struct zvm_run{
     /* Out. */
     uint32_t exit_reason;
-}
+};
 
 
 #endif /* ZVM_ASM_VCPU_H__ */
