@@ -114,14 +114,8 @@ void z_arm64_el2_init(void)
 	uint64_t reg, reg1, m_reg;			/* 64bit register */
 
 	/* hcr_el2 flag set, for trap to hyp */
-	reg = HCR_HOST_NVHE_FLAGS;
+	reg = 1UL << 31;
 	write_hcr_el2(reg);
-	isb();
-
-	/* Set EL2 mmu off */
-	reg = read_sctlr_el2();			//above code had init sctlr_el2, 
-	reg |= SCTLR_EL2_RES1; 
-	write_sctlr_el2(reg);
 	isb();
 
 	/* Enable EL1 physical timer and clear vitrtual offset */
@@ -130,108 +124,11 @@ void z_arm64_el2_init(void)
 	reg = 0U;
 	write_cntvoff_el2(reg);
 
-	/* Debug related init */
-	reg1 = read_id_aa64mmfr0_el1();
-	__asm volatile(
-		"	sbfx	%0, %1, #ID_AA64DFR0_PMUVER_SHIFT, #4 \n"
-		:"=r" (reg) :"r" (reg1) : "memory" 
-	);
-	if(reg >= 1){
-		reg = read_pmcr_el0();
-		reg = (((1U << (16))-1) & reg)>>11;
-		this_reg_flag = true;
-	}
-	if(this_reg_flag){
-		m_reg = 0;
-	}else
-		m_reg = reg;
-	reg = (((1U << (ID_AA64DFR0_PMSVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMSVER_SHIFT;
-	if(reg){
-		__asm volatile(
-			MRS_S("%0", SYS_PMBIDR_EL1)
-			: :"r" (reg) : "memory"
-		);
-		reg = reg & (1U << SYS_PMBIDR_EL1_P_SHIFT);
-		if(!reg){
-			reg =  (1U << SYS_PMSCR_EL2_PA_SHIFT) | (1U << SYS_PMSCR_EL2_PCT_SHIFT);
-			__asm volatile(
-				MSR_S(SYS_PMSCR_EL2, reg)
-				: : : 
-			);
-		}
-		reg = MDCR_EL2_E2PB_MASK << MDCR_EL2_E2PB_SHIFT;
-		m_reg = reg | m_reg;
-	}
-	reg = (((1U << (ID_AA64DFR0_TRBE_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_TRBE_SHIFT;
-	if(reg){
-		__asm volatile(
-			MRS_S("%0", SYS_TRBIDR_EL1)
-			: :"r" (reg) : "memory"
-		);
-		reg = reg & TRBIDR_PROG;
-		if(!reg){
-			reg = MDCR_EL2_E2PB_MASK << MDCR_EL2_E2TB_SHIFT;
-			m_reg = reg | m_reg;
-		}
-	}
-	write_mdcr_el2(m_reg);
-
-
-
-	/* Provides information about the implemented memory model and memory management support in AArch64 state.*/
-	// reg1 = read_id_aa64mmfr1_el1();		read_id_aa64mmfr1_el1 is not supported by this asm
-	__asm volatile(
-		"	mrs	%0,	id_aa64mmfr1_el1  \n"
-		: "=r" (reg1) : : "memory"
-	);
-	reg = (((1U << (ID_AA64MMFR1_LOR_SHIFT+4))-1) & reg1)>>ID_AA64MMFR1_LOR_SHIFT;
-	if(!reg){					/* add some asm code */
-		__asm volatile(
-			MSR_S(LORC_EL1, "xzr")
-			: : : 
-		);
-	}
-
-	/* Stage-2 translation */
-	reg = 0U;
-	__asm volatile(
-		"	msr	vttbr_el2,	xzr \n"
-		: : : 
-	);
-	// write_vttbr_el2(reg); vttbr_el2 is not supported by this asm
-
-	/* GICv3 init sys_register access */
-	reg = read_id_aa64pfr0_el1();		
-	reg = (((1U << (ID_AA64PFR0_GIC_SHIFT+4))-1) & reg)>>ID_AA64PFR0_GIC_SHIFT;
-	if(reg){
-		__asm volatile(
-			MRS_S("%0", ICH_SRE_EL2)
-			: :"r" (reg) : "memory"
-		);
-		reg = reg |  ICC_SRE_EL2_SRE | ICC_SRE_EL2_ENABLE;
-		__asm volatile(
-			MSR_S(ICH_SRE_EL2, "%0")
-			: :"r" (reg) : "memory"
-		);
-		isb();
-		__asm volatile(
-			MRS_S("%0", ICH_SRE_EL2)
-			: :"r" (reg) : "memory"
-		);
-		if(!(reg & 0x01))
-			return;
-		__asm volatile(
-			MSR_S(ICH_HCR_EL2, "xzr")
-			: : : "memory"
-		);
-	}
-
-	/* Disable CP15 trapping to EL2 of EL1 accesses to the System register  */
-	// wirte_hstr_el2(reg);		hstr_el2 not support
-	__asm volatile(
-		"	msr	hstr_el2,	xzr \n"
-		: : : 
-	);
+	/* Set EL2 mmu off */
+	reg = read_sctlr_el2();			//above code had init sctlr_el2, 
+	reg |= SCTLR_EL2_RES1; 
+	write_sctlr_el2(reg);
+	isb();
 
 	/* Init vCPU id register */
 	// reg = read_midr_el1();	midr_el1 not support
@@ -251,74 +148,59 @@ void z_arm64_el2_init(void)
 	reg = 0x33ff;
 	write_cptr_el2(reg);
 
+	/* Disable CP15 trapping to EL2 of EL1 accesses to the System register  */
+	// wirte_hstr_el2(reg);		hstr_el2 not support
+	__asm volatile(
+		"	msr	hstr_el2,	xzr \n"
+		: : : 
+	);
+
+
+	/* Debug related init */
+	reg1 = read_id_aa64mmfr0_el1();
+	if(reg1 >= 0)
+		reg = (((1ULL << (ID_AA64DFR0_PMUVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMUVER_SHIFT;						/* filled with 0 */
+	else
+		reg = ((((1ULL << (ID_AA64DFR0_PMUVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMUVER_SHIFT) | (~((1ULL << 4)-1));	/* filled with 1 */
+	if(reg >= 1){
+		//reg = read_pmcr_el0();  pmcr_el0 not supported
+		__asm volatile(
+			" mrs %0, pmcr_el0	\n"
+			:"=r" (reg) : : "memory"
+		);
+		m_reg = 1U;
+		reg = (((m_reg << (16))-1) & reg)>>11;
+		__asm volatile(
+			" msr mdcr_el2, %0 \n"
+			: : "r" (reg) :
+		);
+		this_reg_flag = true;
+	}
+
+	/* Stage-2 translation */
+	reg = 0U;
+	__asm volatile(
+		"	msr	vttbr_el2,	xzr \n"
+		: : : 
+	);
+
+
+	/* Provides information about the implemented memory model and memory management support in AArch64 state.*/
+	// reg1 = read_id_aa64mmfr1_el1();		read_id_aa64mmfr1_el1 is not supported by this asm
+
+	/* GICv3 init sys_register access */
+
 	/* SVE register access */
 	/* This function is SVE related, which is not used in nvhe mode */
 	/* wait a minute */
 
 	/* Memory related traps */
-	reg1 = read_id_aa64mmfr0_el1();
-	m_reg = ID_AA64MMFR0_FGT_SHIFT;
-	reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
-	if(reg1){
-		reg = 0U;
-		//write_id_aa64dfr0_el1(reg1);	id_aa64dfr0_el1  not support
-		__asm volatile(
-			"	mrs	%0,	id_aa64dfr0_el1 \n"
-			:"=r" (reg1): : "memory"
-		);
-		m_reg = ID_AA64DFR0_PMSVER_SHIFT;
-		reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
-		if(reg1 >= 0x03){
-			m_reg = 1U;
-			reg = (reg | (m_reg<<62));
-		}
-	}
-	__asm volatile(
-		MSR_S(HDFGRTR_EL2, "%0") "\n"
-		MSR_S(HDFGWTR_EL2, "%0") "\n"
-		MSR_S(HFGRTR_EL2, "xzr") "\n"
-		MSR_S(HFGWTR_EL2, "xzr") "\n"
-		MSR_S(HFGITR_EL2, "xzr") 
-		: :"r" (reg) : "memory"
-	);
-	reg1 = read_id_aa64pfr0_el1();
-	m_reg = ID_AA64PFR0_AMU_SHIFT;
-	reg1 = (((1U << (m_reg+4))-1) & reg1)>>m_reg;
-	if(reg1){
-		__asm volatile(
-			MSR_S(HAFGRTR_EL2, "xzr") 
-			: : :
-		);
-	}
+
 
 	/* Set Exception type to EL1h */
 	reg = INIT_PSTATE_EL1;
 	write_spsr_el2(reg);
 
-	/* below with '//' is origin code */
-	//reg = read_sctlr_el2();
-	//reg |= (SCTLR_EL2_RES1 |	/* RES1 */
-	//	SCTLR_I_BIT |		/* Enable i-cache */
-	//	SCTLR_SA_BIT);		/* Enable SP alignment check */
-	//write_sctlr_el2(reg);
-
-	//reg = read_hcr_el2();
-	//reg |= HCR_RW_BIT;		/* EL1 Execution state is AArch64 */
-	//write_hcr_el2(reg);
-
-	//reg = 0U;			/* RES0 */
-	//reg |= CPTR_EL2_RES1;		/* RES1 */
-	//reg &= ~(CPTR_TFP_BIT |		/* Do not trap SVE, SIMD and FP */
-	//	 CPTR_TCPAC_BIT);	/* Do not trap CPACR_EL1 accesses */
-	//write_cptr_el2(reg);
-
- 	//zero_cntvoff_el2();		/* Set 64-bit virtual timer offset to 0 */
-	//zero_cnthctl_el2();
-	//zero_cnthp_ctl_el2(); 
-	/*
-	 * Enable this if/when we use the hypervisor timer.
-	 * write_cnthp_cval_el2(~(uint64_t)0);
-	 */
 
 	z_arm64_el2_plat_init();
 
