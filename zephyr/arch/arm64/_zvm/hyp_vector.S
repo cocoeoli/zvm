@@ -74,6 +74,7 @@ SECTION_SUBSEC_FUNC(exc_vector_table,_vector_table_section,_hyp_stg1_vector_tabl
 
 GTEXT(z_hyp_sync_exc)
 SECTION_FUNC(TEXT, z_hyp_sync_exc)
+	/* no function, just a test */
     mov x9, #0x08
 	eret
 

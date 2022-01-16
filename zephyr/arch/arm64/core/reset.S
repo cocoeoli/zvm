@@ -153,9 +153,20 @@ switch_el:
 	/* EL2 init */
 	bl	z_arm64_el2_init
 
+	/* Add hyp_vecotr: _hyp_stg1_vector_table */
+	adr		x0, _hyp_stg1_vector_table
+	msr		vbar_el2,	x0
+	isb
+
+	/* Test whether cpu is support VHE ?*/
+	/* wait a minute */
+	
+
 	/* Move to EL1 with all exceptions masked */
+	/* some work had done in z_arm64_el2_init
 	mov_imm	x0, (SPSR_DAIF_MASK | SPSR_MODE_EL1T)
 	msr	spsr_el2, x0
+	*/
 
 	adr	x0, 1f
 	msr	elr_el2, x0
@@ -164,6 +175,7 @@ switch_el:
 1:
 	/* EL1 init */
 	bl	z_arm64_el1_init
+	
 
 	/* Enable SError interrupts */
 	msr	DAIFClr, #(DAIFCLR_ABT_BIT)

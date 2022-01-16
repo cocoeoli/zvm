@@ -5,6 +5,7 @@
  */
 
 #include <kernel_internal.h>
+#include <arch/cpu.h>
 #include "boot.h"
 
 void z_arm64_el2_init(void);
@@ -109,34 +110,60 @@ void z_arm64_el3_init(void)
 
 void z_arm64_el2_init(void)
 {
-	uint64_t reg;
+	uint64_t reg, reg1;			/* 64bit register */
 
-	reg = read_sctlr_el2();
-	reg |= (SCTLR_EL2_RES1 |	/* RES1 */
-		SCTLR_I_BIT |		/* Enable i-cache */
-		SCTLR_SA_BIT);		/* Enable SP alignment check */
+	/* Set EL2 mmu off */
+	reg = read_sctlr_el2();			//above code had inited sctlr_el2, 
+	reg |= SCTLR_EL2_RES1; 
 	write_sctlr_el2(reg);
+	isb();
 
-	reg = read_hcr_el2();
-	reg |= HCR_RW_BIT;		/* EL1 Execution state is AArch64 */
+	/* hcr_el2 flag set, for trap to hyp(aarch64 Synchronous) */
+	reg = 1UL << 31;
 	write_hcr_el2(reg);
+	isb();
 
-	reg = 0U;			/* RES0 */
-	reg |= CPTR_EL2_RES1;		/* RES1 */
-	reg &= ~(CPTR_TFP_BIT |		/* Do not trap SVE, SIMD and FP */
-		 CPTR_TCPAC_BIT);	/* Do not trap CPACR_EL1 accesses */
+	/* Enable EL1 physical timer and clear vitrtual offset */
+	reg = 3;
+	write_cnthctl_el2(reg);
+	zero_sysreg(cntvoff_el2);
+
+
+	/* Init vCPU id register */
+	reg = read_midr_el1();	
+	reg1 = read_mpidr_el1();
+	write_vpidr_el2(reg);	
+	write_vmpidr_el2(reg1);
+
+	/* Controls trapping to EL2 of accesses to CPACR, CPACR_EL1, trace */
+	reg = 0x33ff;
 	write_cptr_el2(reg);
 
-	zero_cntvoff_el2();		/* Set 64-bit virtual timer offset to 0 */
-	zero_cnthctl_el2();
-	zero_cnthp_ctl_el2();
-	/*
-	 * Enable this if/when we use the hypervisor timer.
-	 * write_cnthp_cval_el2(~(uint64_t)0);
-	 */
+	/* Disable CP15 trapping to EL2 of EL1 accesses to the System register  */
+	zero_sysreg(hstr_el2);
+
+	/* Debug related init */
+	reg1 = read_id_aa64mmfr0_el1();
+	if(reg1 >= 0)
+		reg = (((1ULL << (ID_AA64DFR0_PMUVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMUVER_SHIFT;						/* filled with 0 */
+	else
+		reg = ((((1ULL << (ID_AA64DFR0_PMUVER_SHIFT+4))-1) & reg1)>>ID_AA64DFR0_PMUVER_SHIFT) | (~((1ULL << 4)-1));	/* filled with 1 */
+	if(reg >= 1){
+		reg = read_pmcr_el0(); 
+		reg = (((1ULL << (16))-1) & reg)>>11;
+		write_mdcr_el2(reg);
+	}
+
+	/* Stage-2 translation  init*/
+	zero_sysreg(vttbr_el2);
+
+
+	/* Set Exception type to EL1h */
+	reg = INIT_PSTATE_EL1;
+	write_spsr_el2(reg);
+
 
 	z_arm64_el2_plat_init();
-
 	isb();
 }
 
@@ -148,6 +175,7 @@ void z_arm64_el1_init(void)
 	write_vbar_el1((uint64_t)_vector_table);
 	isb();
 
+	/* when el2 is implemnted, cpacr_el1 is not work */
 	reg = 0U;			/* RES0 */
 	reg |= CPACR_EL1_FPEN_NOTRAP;	/* Do not trap NEON/SIMD/FP initially */
 					/* TODO: CONFIG_FLOAT_*_FORBIDDEN */

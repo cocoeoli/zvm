@@ -243,14 +243,34 @@
 #define HDFGRTR_EL2			sysreg_ops(3, 4, 3, 1, 4)
 #define HDFGWTR_EL2			sysreg_ops(3, 4, 3, 1, 5)
 
+#define TRBIDR_PROG				BIT(4)
+
+#define SYS_TRBIDR_EL1		sysreg_ops(3, 0, 9, 11, 7)
+
 /* id_aa64dfr0 */
+#define ID_AA64DFR0_PMUVER_SHIFT		(8)
 #define ID_AA64DFR0_PMSVER_SHIFT		(32)
+#define ID_AA64DFR0_TRBE_SHIFT			(44)
 
 /* id_aa64mmfr0 */
 #define ID_AA64MMFR0_FGT_SHIFT			(56)
 
 /* id_aa64mmfr1 */
 #define ID_AA64MMFR1_LOR_SHIFT			(16)
+
+/* ID register */
+#define SYS_PMBIDR_EL1			sysreg_ops(3, 0, 9, 10, 7)
+#define SYS_PMBIDR_EL1_P_SHIFT			(4)
+
+/* sampling controls register */
+#define SYS_PMSCR_EL2			sysreg_ops(3, 4, 9, 9, 0)
+#define SYS_PMSCR_EL2_PA_SHIFT			(4)
+#define SYS_PMSCR_EL2_PCT_SHIFT			(6)
+
+/* hyp related register */
+#define MDCR_EL2_E2PB_MASK				(3)
+#define MDCR_EL2_E2PB_SHIFT				(12)
+#define MDCR_EL2_E2TB_SHIFT				(24)
 
 /* These are for GICv2 emulation only */
 #define GICH_LR_VIRTUALID				(0x3ffUL << 0)
