@@ -42,9 +42,6 @@
 		movk    \xreg, (\imm) & 0xffff, lsl 0
 	.endif
 .endm
-
-
-
 #endif /* _ASMLANGUAGE */
 
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_MACRO_INC_ */
