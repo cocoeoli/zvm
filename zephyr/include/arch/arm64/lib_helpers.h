@@ -72,6 +72,12 @@ MAKE_REG_HELPER(csselr_el1);
 MAKE_REG_HELPER(ccsidr_el1);
 MAKE_REG_HELPER(vmpidr_el2);
 MAKE_REG_HELPER(mpidr_el1);
+MAKE_REG_HELPER(midr_el1);
+MAKE_REG_HELPER(vpidr_el2);
+MAKE_REG_HELPER(pmcr_el0);
+MAKE_REG_HELPER(mdcr_el2);
+MAKE_REG_HELPER(vttbr_el2);
+
 
 MAKE_REG_HELPER_EL123(actlr)
 MAKE_REG_HELPER_EL123(cpacr)
