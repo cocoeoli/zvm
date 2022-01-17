@@ -91,11 +91,11 @@
 #define GET_EL(_mode)		(((_mode) >> MODE_EL_SHIFT) & MODE_EL_MASK)
 
 #define ESR_EC_SHIFT		(26)
-#define ESR_EC_MASK		BIT_MASK(6)
+#define ESR_EC_MASK			BIT_MASK(6)
 #define ESR_ISS_SHIFT		(0)
 #define ESR_ISS_MASK		BIT_MASK(25)
 #define ESR_IL_SHIFT		(25)
-#define ESR_IL_MASK		BIT_MASK(1)
+#define ESR_IL_MASK			BIT_MASK(1)
 
 #define GET_ESR_EC(esr)		(((esr) >> ESR_EC_SHIFT) & ESR_EC_MASK)
 #define GET_ESR_IL(esr)		(((esr) >> ESR_IL_SHIFT) & ESR_IL_MASK)
@@ -115,8 +115,6 @@
 #define ID_AA64PFR0_AMU_SHIFT	(44)
 #define ID_AA64PFR0_SEL2_MASK	(0xf)
 
-
-
 /*
  * TODO: ACTLR is of class implementation defined. All core implementations
  * in armv8a have the same implementation so far w.r.t few controls.
@@ -129,28 +127,23 @@
 #define ACTLR_EL3_L2ACTLR_BIT	BIT(6)
 
 #define CPTR_EZ_BIT		BIT(8)
-#define CPTR_TFP_BIT		BIT(10)
-#define CPTR_TTA_BIT		BIT(20)
-#define CPTR_TCPAC_BIT		BIT(31)
+#define CPTR_TFP_BIT	BIT(10)
+#define CPTR_TTA_BIT	BIT(20)
+#define CPTR_TCPAC_BIT	BIT(31)
 
 #define CPTR_EL2_RES1		BIT(13) | BIT(12) | BIT(9) | (0xff)
 #define CPTR_EL2_TZ			(1 << 8)
 
-#define HCR_FMO_BIT		BIT(3)
-#define HCR_IMO_BIT		BIT(4)
-#define HCR_AMO_BIT		BIT(5)
-#define HCR_RW_BIT		BIT(31)
-
 /* System register interface to GICv3 */
 #define ICC_IGRPEN1_EL1		S3_0_C12_C12_7
-#define ICC_SGI1R		S3_0_C12_C11_5
-#define ICC_SRE_EL1		S3_0_C12_C12_5
-#define ICC_SRE_EL2		S3_4_C12_C9_5
-#define ICC_SRE_EL3		S3_6_C12_C12_5
+#define ICC_SGI1R			S3_0_C12_C11_5
+#define ICC_SRE_EL1			S3_0_C12_C12_5
+#define ICC_SRE_EL2			S3_4_C12_C9_5
+#define ICC_SRE_EL3			S3_6_C12_C12_5
 #define ICC_CTLR_EL1		S3_0_C12_C12_4
 #define ICC_CTLR_EL3		S3_6_C12_C12_4
-#define ICC_PMR_EL1		S3_0_C4_C6_0
-#define ICC_RPR_EL1		S3_0_C12_C11_3
+#define ICC_PMR_EL1			S3_0_C4_C6_0
+#define ICC_RPR_EL1			S3_0_C12_C11_3
 #define ICC_IGRPEN1_EL3		S3_6_C12_C12_7
 #define ICC_IGRPEN0_EL1		S3_0_C12_C12_6
 #define ICC_HPPIR0_EL1		S3_0_C12_C8_2
@@ -197,12 +190,12 @@
 #define CORTEX_A72_L2CTLR_TAG_RAM_SETUP_SHIFT		(9)
 
 #define CORTEX_A72_L2_DATA_RAM_LATENCY_3_CYCLES		(2)
-#define CORTEX_A72_L2_DATA_RAM_LATENCY_MASK		(0x7)
+#define CORTEX_A72_L2_DATA_RAM_LATENCY_MASK			(0x7)
 #define CORTEX_A72_L2_DATA_RAM_SETUP_1_CYCLE		(1)
 #define CORTEX_A72_L2_TAG_RAM_LATENCY_2_CYCLES		(1)
 #define CORTEX_A72_L2_TAG_RAM_LATENCY_3_CYCLES		(2)
-#define CORTEX_A72_L2_TAG_RAM_LATENCY_MASK		(0x7)
-#define CORTEX_A72_L2_TAG_RAM_SETUP_1_CYCLE		(1)
+#define CORTEX_A72_L2_TAG_RAM_LATENCY_MASK			(0x7)
+#define CORTEX_A72_L2_TAG_RAM_SETUP_1_CYCLE			(1)
 
 #define CORTEX_A72_L2ACTLR_EL1				S3_1_C15_C0_0
 #define CORTEX_A72_L2ACTLR_DISABLE_ACE_SH_OR_CHI_BIT	BIT(6)
@@ -213,28 +206,63 @@
 #define L1_CACHE_BYTES		BIT(L1_CACHE_SHIFT)
 #define ARM64_CPU_INIT_SIZE	L1_CACHE_BYTES
 
+/* System registers interface to virtualization */
+#define HCR_EL2		S3_4_C1_C1_0
+
+#define HCR_VM_BIT		BIT(0)
+#define HCR_SWIO_BIT	BIT(1)
+#define HCR_PTW_BIT		BIT(2)
+#define HCR_FMO_BIT		BIT(3)
+#define HCR_IMO_BIT		BIT(4)
+#define HCR_AMO_BIT		BIT(5)
+#define	HCR_VF_BIT		BIT(6)
+#define HCR_VI_BIT		BIT(7)
+#define	HCR_VSE_BIT		BIT(8)
+#define	HCR_FB_BIT		BIT(9)
+#define	HCR_BSU_BIT		(BIT(10) | BIT(11))
+#define HCR_DC_BIT		BIT(12)
+#define	HCR_TWI_BIT		BIT(13)
+#define HCR_TWE_BIT		BIT(14)
+#define	HCR_TID0_BIT	BIT(15)
+#define HCR_TID1_BIT	BIT(16)
+#define HCR_TID2_BIT	BIT(17)
+#define HCR_TID3_BIT	BIT(18)
+#define HCR_TSC_BIT		BIT(19)
+#define	HCR_TIDCP_BIT	BIT(20)
+#define HCR_TACR_BIT	BIT(21)
+#define	HCR_TSW_BIT		BIT(22)
+#define	HCR_TPC_BIT		BIT(23)
+#define	HCR_TPR_BIT		BIT(24)
+#define	HCR_TTLB_BIT	BIT(25)
+#define	HCR_TVM_BIT		BIT(26)
+#define	HCR_TGE_BIT		BIT(27)
+#define	HCR_TDZ_BIT		BIT(28)
+#define	HCR_HCD_BIT		BIT(29)
+#define	HCR_TRVM_BIT	BIT(30)
+#define HCR_RW_BIT		BIT(31)
+#define HCR_CD_BIT		BIT(32)
+#define HCR_ID_BIT		BIT(33)
+
 /* Below codes may have copyright risk */
-/*
- * Below code is to add some macor for EL2 init
- */
+/* Below code is to add some macor for EL2 init */
 #define ENDIAN_SET_EL2		 (0)
 
 #define INIT_SCTLR_EL2_MMU_OFF (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
 
 /* TRBE Registers */
 /* Below codes may be change to original status in next stage */
-#define SYS_LORC_EL1			S3_0_C10_C4_3
+#define SYS_LORC_EL1			  S3_0_C10_C4_3
 #define SYS_ICH_SRE_EL2			S3_4_C12_C9_5
 #define SYS_ICH_VSEIR_EL2		S3_4_C12_C9_4
 #define SYS_ICH_HCR_EL2			S3_4_C12_C11_0
 
-#define SYS_SCTLR_EL2			S3_4_C1_C0_0
+#define SYS_SCTLR_EL2			  S3_4_C1_C0_0
 #define SYS_HAFGRTR_EL2			S3_4_C3_C1_6
 #define SYS_HFGRTR_EL2			S3_4_C1_C1_4
 #define SYS_HFGWTR_EL2			S3_4_C1_C1_5
 #define SYS_HFGITR_EL2			S3_4_C1_C1_6
-#define SYS_ZCR_EL2				S3_4_C1_C2_0
-#define SYS_TRFCR_EL2			S3_4_C1_C2_1
+#define SYS_ZCR_EL2				  S3_4_C1_C2_0
+#define SYS_TRFCR_EL2			  S3_4_C1_C2_1
 #define SYS_DACR32_EL2			S3_4_C3_C0_0
 #define SYS_HDFGRTR_EL2			S3_4_C3_C1_4
 #define SYS_HDFGWTR_EL2			S3_4_C3_C1_5
@@ -249,11 +277,10 @@
 #define ID_AA64MMFR1_LOR_SHIFT			(16)
 
 /* These are for GICv2 emulation only */
-#define GICH_LR_VIRTUALID				(0x3ffUL << 0)
+#define GICH_LR_VIRTUALID				  (0x3ffUL << 0)
 #define GICH_LR_PHYSID_CPUID			(7UL << 10)
 
 #define ICC_IAR1_EL1_SPURIOUS			(0x3ff)
-
 
 /*
  * The ZCR_ELx_LEN_* definitions intentionally include bits [8:4] which
@@ -264,13 +291,11 @@
 #define ZCR_ELx_LEN_SIZE				(9)
 #define ZCR_ELx_LEN_MASK				(0x1ff)
 
-
-
 /* This code will be moved to gic.h file in last stage! */
 /* These are for GICv2 emulation only */
 #define ICC_SRE_EL2_SRE			BIT(0)
-#define ICC_SRE_EL2_ENABLE		BIT(3)
-/*********************-------*******************************/
+#define ICC_SRE_EL2_ENABLE	BIT(3)
+/***********************************/
 
 /*  This code will be moved to prace.h file in last stage! */
 #define INIT_PSTATE_EL1  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000005)

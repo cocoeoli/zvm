@@ -107,27 +107,27 @@ void z_arm64_el3_init(void)
 	}
 }
 
-void z_arm64_el2_init(void)
-{
+/* Configure EL2/virtualization related registers. */
+void z_arm64_el2_init(void){
 	uint64_t reg;
 
 	reg = read_sctlr_el2();
 	reg |= (SCTLR_EL2_RES1 |	/* RES1 */
-		SCTLR_I_BIT |		/* Enable i-cache */
-		SCTLR_SA_BIT);		/* Enable SP alignment check */
+		SCTLR_I_BIT |			/* Enable i-cache */
+		SCTLR_SA_BIT);			/* Enable SP alignment check */
 	write_sctlr_el2(reg);
 
 	reg = read_hcr_el2();
-	reg |= HCR_RW_BIT;		/* EL1 Execution state is AArch64 */
+	reg |= HCR_RW_BIT;			/* EL1 Execution state is AArch64 */
 	write_hcr_el2(reg);
 
-	reg = 0U;			/* RES0 */
+	reg = 0U;					/* RES0 */
 	reg |= CPTR_EL2_RES1;		/* RES1 */
 	reg &= ~(CPTR_TFP_BIT |		/* Do not trap SVE, SIMD and FP */
-		 CPTR_TCPAC_BIT);	/* Do not trap CPACR_EL1 accesses */
+		 CPTR_TCPAC_BIT);		/* Do not trap CPACR_EL1 accesses */
 	write_cptr_el2(reg);
 
-	zero_cntvoff_el2();		/* Set 64-bit virtual timer offset to 0 */
+	zero_cntvoff_el2();			/* Set 64-bit virtual timer offset to 0 */
 	zero_cnthctl_el2();
 	zero_cnthp_ctl_el2();
 	/*
@@ -171,8 +171,7 @@ void z_arm64_el1_init(void)
 	isb();
 }
 
-void z_arm64_el3_get_next_el(uint64_t switch_addr)
-{
+void z_arm64_el3_get_next_el(uint64_t switch_addr){
 	uint64_t spsr;
 
 	write_elr_el3(switch_addr);

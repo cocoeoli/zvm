@@ -60,6 +60,7 @@ SECTION_SUBSEC_FUNC(TEXT,_reset_section,__reset_prep_c)
 	msr	sctlr_el2, x0
 
 	/* Custom plat prep_c init */
+	/* Default do nothing. */
 	bl	z_arm64_el2_plat_prep_c
 
 	/* Set SP_EL1 */
