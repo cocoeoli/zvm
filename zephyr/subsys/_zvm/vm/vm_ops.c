@@ -7,10 +7,13 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 
-#include <_zvm/debug/debug.h>
-#include <_zvm/vm/vm_ops.h>
-#include <_zvm/vm/vm.h>
+#include <asm/virt.h>
+#include <debug/debug.h>
+#include <os/os.h>
+#include <vm/vm_ops.h>
+#include <vm/vm.h>
 
 /**
  * @file
@@ -36,13 +39,13 @@ struct getopt_state *state;
  *  -> ......
  */
 int _create_vm(size_t argc, char **argv){
-	// if(!is_el2_now()){
-	// 	pr_err("Current exception level is not EL2.\n");
-	// 	return -EACCES;		/* Permission denied. */
-	// }
+	if(!is_el2_now()){
+		pr_err("Current exception level is not EL2.");
+		return -EACCES;
+	}
 
 	if(vm_num_full()){
-		pr_err("System vm's num has reached the limit.\n");
+		pr_err("System vm's num has reached the limit.");
 		return -ENXIO;
 	}
 
@@ -56,37 +59,67 @@ int _create_vm(size_t argc, char **argv){
 		 */
 		state = (struct getopt_state*)malloc(sizeof(struct getopt_state));
 		if(!state){
-			pr_err("Allocation memory for getopt_state Error!\n");
-			return -ENOSR;		/* Insufficient memory. */
+			pr_err("Allocation memory for getopt_state Error!");
+			return -ENOMEM;		
 		}
-		getopt_init(state);
 	}
+	getopt_init(state);
 
 	struct vm *new_vm = (struct vm*)malloc(sizeof(struct vm));
 	if(!new_vm){
-		pr_err("Allocation memory for new_vm Error!\n");
-		free(state);
-		return -ENOSR;		/* Insufficient memory. */
+		pr_err("Allocation memory for new_vm Error!");
+		return -ENOMEM;		
 	}
 
 	int opt;
 	char *optstring = "t:n:";
+	new_vm->os = (struct os*)malloc(sizeof(struct os));
+	if(!new_vm->os){
+		pr_err("Allocation memory for new_vm->os Error!");
+		free(new_vm);
+		return -ENOMEM;		
+	}
+	os_init(new_vm->os);
+	
 	while ((opt = getopt(state, argc, argv, optstring)) != -1) {
 		switch (opt) {
 		case 't':
-			new_vm->os->type = atoi(state->optarg);
+			new_vm->os->type = get_os_id_by_type(state->optarg);
 			break;
 		case 'n':
-			new_vm->os->name = state->optarg;
+			strcpy(new_vm->os->name, state->optarg);
 			break;
 		default:
-			pr_err("Input args invalid.\n");
-			return -EINVAL;		/* Invalid argument. */
+			pr_err("Input args invalid.");
+			free(new_vm->os);
+			free(new_vm);
+			return -EINVAL;
 		}
+	}
+	
+	if (new_vm->os->type == OS_TYPE_MAX || strlen(new_vm->os->name) == 0) {
+		pr_err("Input args Error.");
+		free(new_vm->os);
+		free(new_vm);
+		return -EINVAL;
 	}
 
 	new_vm->vmid = _allocate_vmid();
 	new_vm->vm_status = VM_STATUS_NEVER_RUN;
+	/* According to OS type to bind vm_ops. */
+	switch (new_vm->os->type){
+		case OS_TYPE_LINUX:
+			new_vm->ops = &linux_vm_ops;
+			break;
+		case OS_TYPE_ZEPHYR:
+			new_vm->ops = NULL;	/* Add correspoding ops later. */
+			break;
+		default:
+			new_vm->ops = NULL;	/* Add correspoding ops later. */
+			break;
+	}
 
+	printk("--INIT VM--\nOS-type: %s\nVM-name: %s\nNew-vmid: %d\n", \
+		get_os_type_by_id(new_vm->os->type), new_vm->os->name, new_vm->vmid);
 	return 0;
 }

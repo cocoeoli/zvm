@@ -5,5 +5,6 @@
 
 zephyr_sources_ifdef(
     CONFIG_ZVM
+    os.c
     os_linux.c
 )

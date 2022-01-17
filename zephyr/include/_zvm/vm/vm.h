@@ -53,6 +53,9 @@ struct vm {
     /* OS the vm loading. */
     struct os *os;
 
+    /* Bind the vm and the os type ops. */
+    struct vm_ops *ops;
+
     struct zvm_arch *arch;
 
     /* A array for collect vcpu. */

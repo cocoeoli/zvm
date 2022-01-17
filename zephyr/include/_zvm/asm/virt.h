@@ -20,9 +20,15 @@
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
 
+#include <debug/debug.h>
+
 /* Judge whether current exception level is EL2. */
 static inline bool is_el2_now(void){
+#ifdef __NO_ARCH
+    return true;
+#else
     return (MODE_EL2 == GET_EL(read_currentel()));
+#endif
 }
 
 /*

@@ -44,4 +44,6 @@ struct vm_ops {
     void (*delete_vm)(uint32_t vmid);
 };
 
+extern struct vm_ops linux_vm_ops;
+
 #endif /* ZVM_VM_OPS_H__ */

@@ -6,14 +6,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <stdlib.h>
+
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
 #include <sys/printk.h>
-#include <_zvm/asm/virt.h>
-#include <_zvm/zvm.h>
+#include <asm/virt.h>
+#include <zvm.h>
 
-
-struct zvm_info sys_info;
+struct zvm_info *sys_info;
 struct zvm_manage_info *zvm_overall_info; 
 
 int __dt_get_cpu_info(struct zvm_info *sys_info){
@@ -48,8 +49,10 @@ int __zvm_info_init(struct zvm_info *sys_info){
     int cpu_ret = -1, mem_ret = -1;
     cpu_ret = __dt_get_cpu_info(sys_info);
     mem_ret = __dt_get_mem_size(sys_info);
-    if(cpu_ret || mem_ret)
+    if(cpu_ret || mem_ret){
+        pr_err("ZVM hardware info init fail.\n");
         return -EINVAL;
+    }
 
     return 0;
 }
@@ -64,23 +67,60 @@ void zvm_info_print(struct zvm_info *sys_info){
     printk(">------------------------------<\n");
 }
 
+/*
+ * @brief Main work of this function is to initialize zvm.
+ * 
+ * All works include:
+ *  -> Initialize struct variable "zvm_overall_info";
+ *  -> 
+ */
 int zvm_init(void){
-    /*  */
-    return 0;
+    int ret = 0;
+
+    /* 
+     * First initialize zvm_overall_info->hw_info. 
+     * Remember to allocate memory before using pointers!
+     */
+    zvm_overall_info = (struct zvm_manage_info*)malloc  \
+                            (sizeof(struct zvm_manage_info));
+    zvm_overall_info->hw_info = (struct zvm_info*)malloc  \
+                            (sizeof(struct zvm_info));
+    if (!zvm_overall_info || !zvm_overall_info->hw_info){
+        pr_err("Allocate memory for zvm_overall_info Error.\n");
+        /* 
+         * Too cumbersome resource release way. 
+         * We can use resource stack way to manage these resouce. 
+         */
+        free(zvm_overall_info->hw_info);
+        free(zvm_overall_info);
+        return -EINVAL;
+    }
+    
+    ret = __zvm_info_init(zvm_overall_info->hw_info);
+    if(ret){
+        pr_err("Get hardware info from dts failure.\n");
+        free(zvm_overall_info->hw_info);
+        free(zvm_overall_info);
+        return -EINVAL;
+    }
+
+    /* Then initialize the last value in zvm_overall_info. */
+    zvm_overall_info->next_alloc_vmid = 0;
+
+    return ret;
 }
 
 int zvm_arch_init(void){
     int ret = 0, err;
 
     /* Detect hyp mode available. */
-    if(!is_el_implemented(2)){
+    if(!is_el_implemented(MODE_EL2)){
         pr_err("Hyp mode not available.\n");
         return -ENODEV;
     }
 
     /* Detect current EL is EL2. */
-   	int curr_el = GET_EL(read_currentel());
-    if(curr_el != 2){
+    if(!is_el2_now()){
         pr_err("Current EL is not EL2.\n");
         return -ENODEV;
     }

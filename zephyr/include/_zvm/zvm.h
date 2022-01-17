@@ -64,8 +64,6 @@ struct zvm_info {
     char *cpu_type;
 };
 
-extern struct zvm_info sys_info;
-
 /**
  * @brief Get number of physical cpu and its typename.
  * 
@@ -116,9 +114,12 @@ void zvm_info_print(struct zvm_info *sys_info);
  *  -> ...
  */
 struct zvm_manage_info {
-    struct zvm_info zvm_basic_info;
+    struct zvm_info *hw_info;
 
-    struct vm *vms[CONFIG_MAX_VM_NUM];      // This should be replace by list.
+    struct vm *vms[CONFIG_MAX_VM_NUM];
+
+    /* Record every vm's vcpu number. */
+    uint8_t vcpus_num[CONFIG_MAX_VM_NUM];
 
     /* 
      * This value is current smallest vmid which can be allocated. It's default 
@@ -126,7 +127,7 @@ struct zvm_manage_info {
      * The allocation value is this. Conversely, everytime delete/destroy a vm,
      * we will recycle vmid and compare with this value.  
      */
-    int next_alloc_vmid;
+    uint32_t next_alloc_vmid;
 };
 
 /* This struct variable should be init in function zvm_init(). */
