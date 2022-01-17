@@ -49,7 +49,7 @@
 #define SCTLR_M_BIT		BIT(0)
 #define SCTLR_A_BIT		BIT(1)
 #define SCTLR_C_BIT		BIT(2)
-#define SCTLR_SA_BIT	BIT(3)
+#define SCTLR_SA_BIT		BIT(3)
 #define SCTLR_I_BIT		BIT(12)
 
 #define CPACR_EL1_FPEN_NOTRAP	(0x3 << 20)
@@ -109,7 +109,10 @@
 #define ID_AA64PFR0_EL2_SHIFT	(8)
 #define ID_AA64PFR0_EL3_SHIFT	(12)
 #define ID_AA64PFR0_ELX_MASK	(0xf)
+#define ID_AA64PFR0_GIC_SHIFT	(24)
+#define ID_AA64PFR0_SVE_SHIFT	(32)
 #define ID_AA64PFR0_SEL2_SHIFT	(36)
+#define ID_AA64PFR0_AMU_SHIFT	(44)
 #define ID_AA64PFR0_SEL2_MASK	(0xf)
 
 /*
@@ -128,8 +131,8 @@
 #define CPTR_TTA_BIT	BIT(20)
 #define CPTR_TCPAC_BIT	BIT(31)
 
-#define CPTR_EL2_RES1	BIT(13) | BIT(12) | BIT(9) | (0xff)
-
+#define CPTR_EL2_RES1		BIT(13) | BIT(12) | BIT(9) | (0xff)
+#define CPTR_EL2_TZ			(1 << 8)
 
 /* System register interface to GICv3 */
 #define ICC_IGRPEN1_EL1		S3_0_C12_C12_7
@@ -203,7 +206,6 @@
 #define L1_CACHE_BYTES		BIT(L1_CACHE_SHIFT)
 #define ARM64_CPU_INIT_SIZE	L1_CACHE_BYTES
 
-
 /* System registers interface to virtualization */
 #define HCR_EL2		S3_4_C1_C1_0
 
@@ -241,4 +243,64 @@
 #define HCR_CD_BIT		BIT(32)
 #define HCR_ID_BIT		BIT(33)
 
-#endif	/* ZEPHYR_INCLUDE_ARCH_ARM64_CPU_H_ */
+/* Below codes may have copyright risk */
+/* Below code is to add some macor for EL2 init */
+#define ENDIAN_SET_EL2		 (0)
+
+#define INIT_SCTLR_EL2_MMU_OFF (SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
+
+/* TRBE Registers */
+/* Below codes may be change to original status in next stage */
+#define SYS_LORC_EL1			  S3_0_C10_C4_3
+#define SYS_ICH_SRE_EL2			S3_4_C12_C9_5
+#define SYS_ICH_VSEIR_EL2		S3_4_C12_C9_4
+#define SYS_ICH_HCR_EL2			S3_4_C12_C11_0
+
+#define SYS_SCTLR_EL2			  S3_4_C1_C0_0
+#define SYS_HAFGRTR_EL2			S3_4_C3_C1_6
+#define SYS_HFGRTR_EL2			S3_4_C1_C1_4
+#define SYS_HFGWTR_EL2			S3_4_C1_C1_5
+#define SYS_HFGITR_EL2			S3_4_C1_C1_6
+#define SYS_ZCR_EL2				  S3_4_C1_C2_0
+#define SYS_TRFCR_EL2			  S3_4_C1_C2_1
+#define SYS_DACR32_EL2			S3_4_C3_C0_0
+#define SYS_HDFGRTR_EL2			S3_4_C3_C1_4
+#define SYS_HDFGWTR_EL2			S3_4_C3_C1_5
+
+/* id_aa64dfr0 */
+#define ID_AA64DFR0_PMSVER_SHIFT		(32)
+
+/* id_aa64mmfr0 */
+#define ID_AA64MMFR0_FGT_SHIFT			(56)
+
+/* id_aa64mmfr1 */
+#define ID_AA64MMFR1_LOR_SHIFT			(16)
+
+/* These are for GICv2 emulation only */
+#define GICH_LR_VIRTUALID				  (0x3ffUL << 0)
+#define GICH_LR_PHYSID_CPUID			(7UL << 10)
+
+#define ICC_IAR1_EL1_SPURIOUS			(0x3ff)
+
+/*
+ * The ZCR_ELx_LEN_* definitions intentionally include bits [8:4] which
+ * are reserved by the SVE architecture for future expansion of the LEN
+ * field, with compatible semantics.
+ */
+#define ZCR_ELx_LEN_SHIFT				(0)
+#define ZCR_ELx_LEN_SIZE				(9)
+#define ZCR_ELx_LEN_MASK				(0x1ff)
+
+/* This code will be moved to gic.h file in last stage! */
+/* These are for GICv2 emulation only */
+#define ICC_SRE_EL2_SRE			BIT(0)
+#define ICC_SRE_EL2_ENABLE	BIT(3)
+/***********************************/
+
+/*  This code will be moved to prace.h file in last stage! */
+#define INIT_PSTATE_EL1  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000005)
+#define INIT_PSTATE_EL2  (0x00000200 | 0x00000100 | 0x00000080 | 0x00000040 | 0x00000009)
+/***********************/
+/* Above codes may have copyright risk */
+
+#endif /* ZEPHYR_INCLUDE_ARCH_ARM64_CPU_H_ */
