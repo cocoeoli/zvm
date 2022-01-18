@@ -8,7 +8,8 @@
  *
  * This module contains zvm init code for arm64 
  */
-
+#include <kernel.h>
+#include <kernel_internal.h>
 
 int zvm_arch_init(){
     bool kernel_mode;
