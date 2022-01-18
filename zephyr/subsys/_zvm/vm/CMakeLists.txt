@@ -1,13 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) Huang Jiajia 
 # Email: Huangjj2020@hnu.edu.cn
-# Date: 2021-12-07
-
-add_subdirectory(os)
-add_subdirectory(vm)
-add_subdirectory(zvm_host)
+# Date: 2021-12-31
 
 zephyr_sources_ifdef(
     CONFIG_ZVM
-    vm_shell.c
+    vm_ops.c
+    vm.c
 )

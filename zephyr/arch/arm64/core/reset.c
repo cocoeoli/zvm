@@ -5,7 +5,6 @@
  */
 
 #include <kernel_internal.h>
-#include <arch/cpu.h>
 #include "boot.h"
 
 void z_arm64_el2_init(void);
@@ -108,6 +107,7 @@ void z_arm64_el3_init(void)
 	}
 }
 
+/* Configure EL2/virtualization related registers. */
 void z_arm64_el2_init(void)
 {
 	uint64_t reg, reg1;			/* 64bit register */
@@ -175,7 +175,6 @@ void z_arm64_el1_init(void)
 	write_vbar_el1((uint64_t)_vector_table);
 	isb();
 
-	/* when el2 is implemnted, cpacr_el1 is not work */
 	reg = 0U;			/* RES0 */
 	reg |= CPACR_EL1_FPEN_NOTRAP;	/* Do not trap NEON/SIMD/FP initially */
 					/* TODO: CONFIG_FLOAT_*_FORBIDDEN */
@@ -199,8 +198,7 @@ void z_arm64_el1_init(void)
 	isb();
 }
 
-void z_arm64_el3_get_next_el(uint64_t switch_addr)
-{
+void z_arm64_el3_get_next_el(uint64_t switch_addr){
 	uint64_t spsr;
 
 	write_elr_el3(switch_addr);

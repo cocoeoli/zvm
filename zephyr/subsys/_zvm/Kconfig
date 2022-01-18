@@ -7,6 +7,8 @@
 
 menuconfig ZVM
 	bool "ZVM"
+	help
+	  Zephyr virtualization support.
 
 if ZVM
 
@@ -15,5 +17,21 @@ config CONFIG_ZVM
 	default y    
 	help
 	  The zvm app have a top shell to receive command, such as zvm.
+
+config MAX_VM_NUM
+	int "Maximum number of simultaneous VMs"
+	depends on CONFIG_ZVM
+	range 0 64
+	default 64
+	help
+	  Maximum number of simultaneous VMs
+
+config MAX_VCPU_PER_VM
+	int "Maximum number of vcpu a vm possese"
+	depends on CONFIG_ZVM
+	range 1 4
+	default 1
+	help
+	  Maximum number of vcpu a vm possese
 
 endif   # ZVM

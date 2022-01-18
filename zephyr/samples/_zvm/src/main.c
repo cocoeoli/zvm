@@ -1,6 +1,5 @@
 /*
- * THIS FILE IS PART OF ZVM PROJECT
- * main.c - 
+ * THIS FILE IS PART OF ZVM PROJECT - main.c
  *
  * Copyright (c) 2021 Huang Jiajia 
  * Email: Huangjj2020@hnu.edu.cn
@@ -11,10 +10,12 @@
 #include <zephyr.h>
 #include <sys/printk.h>
 #include <shell/shell.h>
-#include <_zvm/zvm.h>
+#include <zvm.h>
 
-int main(int argc, char **argv)
-{
-   printk("ZVM test.../n");
+int main(int argc, char **argv){
+   int ret = zvm_init();
+   
+   printk("ZVM test. ret = %d.\n", ret);
+   zvm_info_print(zvm_overall_info->hw_info);
    return 0;
 }
