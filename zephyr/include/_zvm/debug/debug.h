@@ -13,7 +13,7 @@
 
 /* Log module switch. Turn off output nothing. */
 #define __DEBUG
-#define __NO_ARCH
+// #define __NO_ARCH
 
 #ifdef  __DEBUG
     #define DEBUG(format, ...)  printk(format, ##__VA_ARGS__)

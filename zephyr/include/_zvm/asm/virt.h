@@ -22,7 +22,8 @@
 
 #include <debug/debug.h>
 
-/* Judge whether current exception level is EL2. */
+/* Judge whether current exception level is EL2. 
+   */
 static inline bool is_el2_now(void){
 #ifdef __NO_ARCH
     return true;

@@ -110,27 +110,4 @@ int zvm_init(void){
     return ret;
 }
 
-int zvm_arch_init(void){
-    int ret = 0, err;
 
-    /* Detect hyp mode available. */
-    if(!is_el_implemented(MODE_EL2)){
-        pr_err("Hyp mode not available.\n");
-        return -ENODEV;
-    }
-
-    /* Detect current EL is EL2. */
-    if(!is_el2_now()){
-        pr_err("Current EL is not EL2.\n");
-        return -ENODEV;
-    }
-    
-    /* Init hyp mode. */
-    err = init_hyp_mode();
-    if(err){
-        pr_err("Init hyp mode Error.\n");
-        return err;
-    }
-    
-    return ret;
-}

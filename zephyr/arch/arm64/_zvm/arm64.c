@@ -10,16 +10,61 @@
  */
 #include <kernel.h>
 #include <kernel_internal.h>
+#include <cpu.h>
+#include <_zvm/debug/debug.h>
 
-int zvm_arch_init(){
-    bool kernel_mode;
+/**
+ * @brief whether hyp and vhe is supported.
+ * 
+ * @return true : vhe available
+ * @return false : vhe not available
+ * @error : hyp not available
+ */
+static inline bool is_basic_hardware_support()
+{
+    bool is_kernel_run_el2;
+    /* Detect hyp mode available. */
+    if(!is_el_implemented(MODE_EL2)){
+        pr_err("Hyp mode not available.\n");
+        return -ENODEV;
+    }
 
-    /* Is cpus boot in el2 and 'CONFIG_KVM' enable */
-    is_cpus_boot_in_hyp();
-
-    /* Is kernel run in EL2 */
+    /* Detect whether OS is running on EL2? 
+       is vhe available?
+    */
+    is_kernel_run_el2 = is_el2_now();
     
-    kernel_mode
+    return is_kernel_run_el2;
+}
+
+int init_hyp_mode()
+{
+    zvm_hypstart_code_init();
+
+    zvm_hyp_memstruct_alloc();
+
+    creat_hyp_mapping();
+}
+
+
+int zvm_arch_init(void){
+    bool in_vhe_mode;
+    int ret = 0, err;
+
+    /* Is hyp、vhe available? */
+    in_vhe_mode = is_basic_hardware_support();
+
+    ipa_limit_check();
+
+    
+    /* Init hyp mode. */
+    err = init_hyp_mode();
+    if(err){
+        pr_err("Init hyp mode Error.\n");
+        return err;
+    }
+    
+    return ret;
 }
 
 
