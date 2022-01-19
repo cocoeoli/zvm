@@ -33,6 +33,8 @@ static inline bool is_basic_hardware_support()
        is vhe available?
     */
     is_kernel_run_el2 = is_el2_now();
+
+    /*ignore ipa check this time, maybe uesful in the future arch */
     
     return is_kernel_run_el2;
 }
@@ -43,7 +45,7 @@ int init_hyp_mode()
 
     zvm_hyp_memstruct_alloc();
 
-    creat_hyp_mapping();
+    create_hyp_mapping();
 }
 
 
@@ -53,8 +55,6 @@ int zvm_arch_init(void){
 
     /* Is hyp、vhe available? */
     in_vhe_mode = is_basic_hardware_support();
-
-    ipa_limit_check();
 
     
     /* Init hyp mode. */
