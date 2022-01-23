@@ -37,16 +37,17 @@ static inline bool is_basic_hardware_support()
     return is_kernel_run_el2;
 }
 
+/* unable init_hyp_mode  
 int init_hyp_mode()
 {
-    /* Allocate mem and enable */
+
     zvm_hypstart_code_init();
 
     zvm_hyp_memstruct_alloc();
 
     creat_hyp_mapping();
 }
-
+*/
 
 int zvm_arch_init(void){
     bool in_vhe_mode;
@@ -54,16 +55,7 @@ int zvm_arch_init(void){
 
     /* Is hyp、vhe available? */
     in_vhe_mode = is_basic_hardware_support();
-
-    ipa_limit_check();
-
     
-    /* Init hyp mode. */
-    err = init_hyp_mode();
-    if(err){
-        pr_err("Init hyp mode Error.\n");
-        return err;
-    }
     
     return ret;
 }
