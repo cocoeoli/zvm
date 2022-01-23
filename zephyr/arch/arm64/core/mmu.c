@@ -262,7 +262,7 @@ static int set_mapping(struct arm_mmu_ptables *ptables,
 			ret = -EBUSY;
 			break;
 		}
-
+		
 		level_size = 1ULL << LEVEL_TO_VA_SIZE_SHIFT(level);
 
 		if (is_desc_superset(*pte, desc, level)) {
@@ -731,7 +731,7 @@ static void setup_page_tables(struct arm_mmu_ptables *ptables)
 	/* setup translation table for zephyr execution regions */
 	for (index = 0U; index < ARRAY_SIZE(mmu_zephyr_ranges); index++) {
 		range = &mmu_zephyr_ranges[index];
-		add_arm_mmu_flat_range(ptables, range, 0);
+		add_arm_mmu_flat_range(ptables, range, 0);			
 	}
 
 	/*

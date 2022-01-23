@@ -64,6 +64,7 @@ struct zvm_info {
     char *cpu_type;
 };
 
+
 /**
  * @brief Get number of physical cpu and its typename.
  * 

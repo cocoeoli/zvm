@@ -104,6 +104,12 @@ SECTIONS
 #endif
 
         _vector_start = .;
+
+#ifdef CONFIG_ZVM
+        KEEP(*(.hyp_vector_table))
+        KEEP(*(".hyp_vector_table.*"))
+#endif
+
         KEEP(*(.exc_vector_table))
         KEEP(*(".exc_vector_table.*"))
 

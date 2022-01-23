@@ -13,8 +13,8 @@
 _ASM_FILE_PROLOGUE
 
 
-GDATA(_hyp_stg1_vector_table)
-SECTION_SUBSEC_FUNC(exc_vector_table,_vector_table_section,_hyp_stg1_vector_table)
+GDATA(_hyp_vector_table)
+SECTION_SUBSEC_FUNC(hyp_vector_table,_vector_table_section,_hyp_vector_table)
 
 	/* The whole table must be 2K aligned */
 	.align 11
