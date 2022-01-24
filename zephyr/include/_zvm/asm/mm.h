@@ -46,7 +46,17 @@ struct zvm_mem_slot {
 
     /* gpf_base vritual page frame base address  */
     uint64_t    gpf_vase;
-}
+};
 
+/**
+ * @brief Declare vm_task_area struct to handler one of VM task  
+ * !!     ready to fill some code but not now.
+ */
+struct vm_task_mm_area {
+    vas_addr    area_start;
+    vas_addr    area_end;
+
+    
+};
 
 #endif /* ZVM_ASM_MM_H__ */

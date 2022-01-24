@@ -9,8 +9,14 @@
 
 static int ipa_mem_abort(struct zvm_vcpu *vcpu, phys_addr ipa_addr, struct zvm_mem_slot *memslots)
 {
-    /* judge which trap to ipa->hpa */
+    /* give a lock for this mem lock for this thread */
 
-    /* give a lock for this mem lock */
+
+    /* vma is necessary? try it later */
     
+
+    /* allocate a memory region for ipa */
+
+
+    /* unlock the mem lock for this thread */
 }
