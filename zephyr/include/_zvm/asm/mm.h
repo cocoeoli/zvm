@@ -12,6 +12,7 @@
 #ifndef ZVM_ASM_MM_H__
 #define ZVM_ASM_MM_H__
 
+#include <zephyr.h>
 #include <stdint.h>
 
 
@@ -22,6 +23,23 @@ typedef uint64_t vas_addr;
 
 /* 64 bits physical address */
 typedef uint64_t phys_addr;
+
+/*
+ * Address types:
+ *  _gva_t - guest virtual address
+ *  _gpa_t - guest physical address
+ *  _gpa_pf - guest page frame number
+ *  _hva_t - host virtual address
+ *  _hpa_t - host physical address
+ *  _hpa_pf - host page frame number
+ */
+typedef uint64_t    _gva_t;
+typedef uint64_t    _gpa_t;
+typedef uint64_t    _gpa_pf;
+
+typedef uint64_t    _hva_t;
+typedef uint64_t    _hpa_t;
+typedef uint64_t    _hpa_pf;
 
 
 /**
@@ -56,7 +74,7 @@ struct vm_task_mm_area {
     vas_addr    area_start;
     vas_addr    area_end;
 
-    
+
 };
 
 #endif /* ZVM_ASM_MM_H__ */

@@ -7,16 +7,24 @@
 #include<_zvm/asm/zvm_host.h>
 #include<_zvm/asm/mm.h>
 
-static int ipa_mem_abort(struct zvm_vcpu *vcpu, phys_addr ipa_addr, struct zvm_mem_slot *memslots)
+#define test_heap_size  4096
+
+K_HEAP_DEFINE(vm_test_heap, test_heap_size);
+
+
+
+static int ipa_mem_abort(struct zvm_vcpu *vcpu, vas_addr hva_addr, struct zvm_mem_slot *memslots)
 {
+
     /* give a lock for this mem lock for this thread */
 
 
-    /* vma is necessary? try it later */
+    /* vm_struct for record the page list */
     
 
-    /* allocate a memory region for ipa */
-
+    /* allocate a memory region for hva */
+    _gpa_pf = 
+    
 
     /* unlock the mem lock for this thread */
 }
