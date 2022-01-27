@@ -83,6 +83,38 @@ typedef uint64_t    _hpa_pf;
 
 
 /**
+ * @brief vm_ramblock struct for build the relationship of gpa to hva
+ * 
+ */
+struct vm_ramblock{
+    /* ramblock's related region */ 
+    struct vm_gpa_memory_region *mr;    
+    
+};
+
+
+/**
+ * @brief vm_gpa_memory_region struct for recording one kind of memory in guest os 
+ * 
+ */
+struct vm_gpa_memory_region{
+    /* the base addr of this region (gpa)*/
+    phys_addr   vm_ram_addr;
+
+    /* related hva addr of this region */
+    vas_addr    vm_addr;
+};
+
+/**
+ * @brief vm_gpa_address_space struct for recording the total gpa info for a guest os
+ * 
+ */
+struct vm_gpa_address_space{
+    
+};
+
+
+/**
  * @brief Declare vm_task_area struct to store one of VM task area  
  * 
  */
