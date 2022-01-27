@@ -43,6 +43,96 @@ typedef uint64_t    _hpa_pf;
 
 
 /**
+ * The VM area of virtual space, below flag record the area of space
+ * for user to operate 
+ * ------------------------*
+ * | no permission area |
+ * | -------------------|
+ * |  env varible area  |
+ * | -------------------|
+ * | command line area  |
+ * | -------------------|
+ * |    stack area      |
+ * | -------------------|
+ * |    share area      |
+ * | -------------------|
+ * |     heap area      |
+ * | -------------------|
+ * |     bss area       |
+ * | -------------------|
+ * |     data area      |
+ * | -------------------|
+ * |     code area      |
+ * | -------------------|
+ * ------------------------*
+ */
+#define VM_MM_NO_ACCESS	    (0UL)
+#define VM_MM_ENV_INFO		BIT(0)
+#define VM_MM_CML 		    BIT(1)
+#define VM_MM_STACK		    BIT(2)
+#define VM_MM_EMPTY		    BIT(3)
+#define VM_MM_HEAP 		    BIT(4)
+#define VM_MM_BSS		    BIT(5)
+#define VM_MM_DATA		    BIT(6)
+#define VM_MM_CODE		    BIT(7)
+
+#define VM_MM_RO            BIT(13)
+#define VM_MM_RW            BIT(14)
+#define VM_MM_EXE           BIT(15)
+
+
+
+/**
+ * @brief Declare vm_task_area struct to store one of VM task area  
+ * 
+ */
+struct vm_task_mm_area {
+    /* vm_task_mm_area's start and end address on zvm_mm_struct */
+    vas_addr    area_start;
+    vas_addr    area_end;
+
+    /* the vm_task_mm_area list link lots of area in one kind */ 
+    struct  vm_task_mm_area *vm_tma_next, *vm_tma_prev; 
+
+    /* vm_task_mm_area belong to one zvm_mm */
+    struct  zvm_mm_struct   *zvm_mm;
+
+    /* mm flag for user, see VM_MM_*  flag */
+    uint16_t    vm_tma_flag;
+};
+
+/**
+ * @brief zvm_mm_struct describe the full virtual address space of zvm. 
+ * 
+ */
+struct zvm_mm_struct{
+    /* vm_task_mm_area list for vm's task list*/
+    struct  vm_task_mm_area *mma_list;
+
+    /* num of vm'task list */
+    uint32_t    vm_task_num;
+
+    /* base addr of this zvm_mm area */
+    uint64_t    zvm_mm_base_addr;
+    /* size of this zvm_mm area */
+    uint64_t    zvm_mm_vsize;
+
+    /* code start and end address of virtual mm_struct */
+    uint64_t    start_code, end_code;
+    /* data */
+    uint64_t    start_data, end_date;
+    /* head */
+    uint64_t    start_heap, end_heap;
+    /* stack */
+    uint64_t    start_stack;
+    /* command arg */
+    uint64_t    start_args, end_args;
+    /* env addr */
+    uint64_t    start_env, end_env;
+
+};
+
+/**
  * @brief Declare zvm_mem_slot structure to store the memory slot managed by hypervisor
  * 
  */
@@ -64,17 +154,6 @@ struct zvm_mem_slot {
 
     /* gpf_base vritual page frame base address  */
     uint64_t    gpf_vase;
-};
-
-/**
- * @brief Declare vm_task_area struct to handler one of VM task  
- * !!     ready to fill some code but not now.
- */
-struct vm_task_mm_area {
-    vas_addr    area_start;
-    vas_addr    area_end;
-
-
 };
 
 #endif /* ZVM_ASM_MM_H__ */
