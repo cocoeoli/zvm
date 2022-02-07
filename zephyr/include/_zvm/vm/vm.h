@@ -16,11 +16,20 @@
 #include <_zvm/zvm.h>
 
 #include "vm_ops.h"
+#include <stdint.h>
+
+/* VM's id */
+typedef uint16_t VM_ID;
+
+/* vm's name length */
+#define VM_NAME_LEN    32
+/* vm image's name length */ 
+#define RAMDISK_NAME_LEN    32
+
 
 /**
  * @TODO We support SMP later. 
  */
-
 struct vcpu {
     /* Which vm this vCPU belongs to. */
     struct vm *vm;
@@ -39,16 +48,49 @@ enum {
 };
 
 /**
+ * @brief vm description for guest vm
+ * 
+ */
+struct vm_desc {
+	VM_ID vmid;
+	char name[VM_NAME_LEN];
+
+    /* vcpu's number */
+	int32_t vcpu_num;
+
+    /* mem_base address */
+	uint64_t mem_base;
+	uint64_t mem_size;
+
+    /* vm's code entry */
+	uint64_t entry;
+	
+    /* vm's flag */
+	uint64_t flags;
+
+    /* vm's image load address */
+	uint64_t image_load_address;
+
+    /* image's name */
+	char vm_kernel_image_name[RAMDISK_NAME_LEN];
+	char vm_dtb_image_name[RAMDISK_NAME_LEN];
+};
+
+/**
  * @TODO  
  */
 struct vm {
-    uint32_t vmid;
+    VM_ID vmid;
     uint32_t vm_status;
+
+    /* vcpu's number */
+	int32_t vcpu_num;
 
     /* Need a spinlock for protecting mmu. */
     struct k_spinlock spinlock;
 
     /* Block memory allocated for this vm. */
+    struct zvm_mm_struct z_mm;
 
     /* OS the vm loading. */
     struct os *os;

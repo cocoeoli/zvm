@@ -13,7 +13,7 @@ K_HEAP_DEFINE(vm_test_heap, test_heap_size);
 
 
 
-static int ipa_mem_abort(struct zvm_vcpu *vcpu, vas_addr hva_addr, struct zvm_mem_slot *memslots)
+static int ipa_mem_abort(struct zvm_vcpu *vcpu, virt_addr hva_addr, struct zvm_mem_slot *memslots)
 {
 
     /* give a lock for this mem lock for this thread */
@@ -23,7 +23,7 @@ static int ipa_mem_abort(struct zvm_vcpu *vcpu, vas_addr hva_addr, struct zvm_me
     
 
     /* allocate a memory region for hva */
-    _gpa_pf = 
+    
     
 
     /* unlock the mem lock for this thread */
