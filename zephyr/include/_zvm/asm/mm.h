@@ -15,9 +15,14 @@
 #include <zephyr.h>
 #include <stdint.h>
 #include <_zvm/vm/vm.h>
+#include <_zvm/list_ops.h>
 
 
 #define default_mm_block_size   ((1UL)<<(12))
+
+/* 64bits machine virtual address space */
+#define BITS_64_BASE    0X00
+#define BITS_64_SIZE    0X0001000000000000
 
 /* 64 bits virtual address */
 typedef uint64_t virt_addr;
@@ -42,14 +47,6 @@ typedef uint64_t    _hva_t;
 typedef uint64_t    _hpa_t;
 typedef uint64_t    _hpa_pf;
 
-
-/**
- * @brief list_addr_t struct for the list of heap or page
- * 
- */
-struct list_addr_t{
-    struct list_addr_t *prev, *next;
-};
 
 /**
  * @brief vm_ramblock struct for build the relationship of gpa to hva
@@ -92,6 +89,9 @@ struct vm_task_mm_area {
     virt_addr    area_start;
     virt_addr    area_end;
 
+    /* vm_task_mm_area's size */
+    uint64_t    area_size;
+
     /* the vm_task_mm_area list link lots of area in one kind */ 
     struct  list_addr_t vma_list; 
 
@@ -110,6 +110,9 @@ struct vm_task_mm_area {
  * 
  */
 struct zvm_mm_struct{
+    /* num of vm'task list */
+    uint32_t    vm_task_num;
+
     /* vm_task_mm_area list for vm's task list*/
     struct  vm_task_mm_area *mma_list;
 
@@ -120,13 +123,14 @@ struct zvm_mm_struct{
     /* Need a spin_mmlock for protecting mm. */
     struct k_spinlock spin_mmlock;
 
-    /* num of vm'task list */
-    uint32_t    vm_task_num;
 
     /* base addr of this zvm_mm area */
     uint64_t    zvm_mm_base_addr;
     /* size of this zvm_mm area */
     uint64_t    zvm_mm_vsize;
+
+    /* for store vm struct */
+    void *this_vm;
 
 };
 
@@ -153,5 +157,23 @@ struct zvm_mem_slot {
     /* gpf_base vritual page frame base address  */
     uint64_t    gpf_vase;
 };
+
+
+/**
+ * @brief add vtma_space in vm's virtual space
+ */
+static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
+
+/**
+ * @brief this function for init the vma struct for vm's virtual address space
+ */
+static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t size);
+
+/**
+ * @brief initial vm_mm struct for guest vm
+ */
+static void zvm_mm_struct_init(struct vm *this_vm);
+
+
 
 #endif /* ZVM_ASM_MM_H__ */

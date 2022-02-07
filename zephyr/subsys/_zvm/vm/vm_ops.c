@@ -25,6 +25,7 @@
 /* Structure for parsing args. */
 struct getopt_state *state;
 
+
 /*
  * @brief Create a blank vm struct for subsequent operations. 
  * 
@@ -39,6 +40,10 @@ struct getopt_state *state;
  *  -> ......
  */
 int _create_vm(size_t argc, char **argv){
+
+	/* get the descriptor of created vm */
+	struct vm_desc *vmdesc = argv[0];
+
 	if(!is_el2_now()){
 		pr_err("Current exception level is not EL2.");
 		return -EACCES;
@@ -121,5 +126,9 @@ int _create_vm(size_t argc, char **argv){
 
 	printk("--INIT VM--\nOS-type: %s\nVM-name: %s\nNew-vmid: %d\n", \
 		get_os_type_by_id(new_vm->os->type), new_vm->os->name, new_vm->vmid);
+
+	/* initial vm_mm struct */
+	
+
 	return 0;
 }

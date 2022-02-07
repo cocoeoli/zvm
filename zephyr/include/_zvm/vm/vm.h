@@ -12,6 +12,7 @@
 #include <toolchain/gcc.h>
 
 #include <_zvm/asm/zvm_host.h>
+#include <_zvm/asm/mm.h>
 #include <_zvm/os/os.h>
 #include <_zvm/zvm.h>
 
@@ -25,6 +26,9 @@ typedef uint16_t VM_ID;
 #define VM_NAME_LEN    32
 /* vm image's name length */ 
 #define RAMDISK_NAME_LEN    32
+
+/* vcpu's num per vm */ 
+#define CONFIG_MAX_VCPU_PER_VM  4
 
 
 /**
@@ -77,7 +81,7 @@ struct vm_desc {
 };
 
 /**
- * @TODO  
+ * @desc: vm struct 
  */
 struct vm {
     VM_ID vmid;
@@ -129,5 +133,7 @@ static inline uint32_t get_vmid(struct vm *vm){
 static inline uint32_t get_vm_status(struct vm *vm){
     return vm->vm_status;
 }
+
+
 
 #endif /* ZVM_HOST_H__ */
