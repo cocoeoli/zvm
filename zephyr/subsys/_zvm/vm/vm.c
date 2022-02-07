@@ -9,6 +9,7 @@
 #include <toolchain/gcc.h>
 
 #include <_zvm/zvm.h>
+#include <_zvm/asm/mm.h>
 #include <_zvm/vm/vm.h>
 #include <_zvm/list_ops.h>
 
@@ -55,7 +56,7 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
         start_addr = vtma->area_start;
         end_addr = vtma->area_end + 1;
 
-        if ((base > end_addr) || (base < start_addr) || (this_vma_end > end))
+        if ((base > end_addr) || (base < start_addr) || (this_vma_end > end_addr))
 			continue;
 
 		if ((base == start_addr) && (this_vma_end == end_addr)) {
@@ -80,10 +81,20 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
     if(new_vtma){
         new_vtma->vm_tma_flag = flag;
         add_used_vtma_space(z_mm, new_vtma);
+    }else{
+        pr_err("Invalid memory config for vm!");
+        return -1;
     }
 
-    /* ** release the vtma */
+    /* ** release the vtma's spin_lock */
 
-    return new_vtma;
+    list_for_each_entry(vtma, &z_mm->used_mma_list, vma_list){
+        if(!(vtma->vm_tma_flag & NORMAL_MEM))
+            continue;
+
+        if(alloc_vm_memory(z_mm, vtma)){
+            
+        }
+    }
 
 }

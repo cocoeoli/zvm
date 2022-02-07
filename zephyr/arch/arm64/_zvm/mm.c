@@ -24,7 +24,6 @@ static int ipa_mem_abort(struct zvm_vcpu *vcpu, virt_addr hva_addr, struct zvm_m
 
     /* allocate a memory region for hva */
     
-    
 
     /* unlock the mem lock for this thread */
 }

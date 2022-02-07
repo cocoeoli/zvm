@@ -5,6 +5,7 @@
  */
 
 #include <_zvm/zvm.h>
+#include <_zvm/asm/mm.h>
 #include <_zvm/vm/vm.h>
 #include <_zvm/list_ops.h>
 
@@ -124,5 +125,18 @@ static void zvm_mm_struct_init(struct vm *this_vm)
         pr_err("Fail to add free vtma to list!");
 
     /* ** relase spin_lock for vmm_area list */
+}
+
+
+/**
+ * @brief alloc physical memory for vtma
+ * 
+ * @param z_mm 
+ * @param v_area 
+ * @return int 
+ */
+static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
+{
+    
 }
 

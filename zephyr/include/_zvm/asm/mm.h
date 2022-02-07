@@ -24,6 +24,12 @@
 #define BITS_64_BASE    0X00
 #define BITS_64_SIZE    0X0001000000000000
 
+
+/* VM memory type */
+#define IO_MEM          0x01
+#define NORMAL_MEM      0X02
+#define MEM_TYPE_MASK   0Xff
+
 /* 64 bits virtual address */
 typedef uint64_t virt_addr;
 
@@ -174,6 +180,9 @@ static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t siz
  */
 static void zvm_mm_struct_init(struct vm *this_vm);
 
-
+/**
+ * @brief alloc physical memory for vtma
+ */
+static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
 
 #endif /* ZVM_ASM_MM_H__ */
