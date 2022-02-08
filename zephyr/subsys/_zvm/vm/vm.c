@@ -93,6 +93,11 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
             continue;
 
         if(alloc_vm_memory(z_mm, vtma)){
+            pr_err("alloc vm physical memory failed!");
+            return -1;
+        }
+
+        if(map_vtma_to_block()){
             
         }
     }

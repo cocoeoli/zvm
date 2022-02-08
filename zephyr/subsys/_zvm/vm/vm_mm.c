@@ -10,11 +10,15 @@
 #include <_zvm/list_ops.h>
 
 /**
- * @brief add vtma_space to vm's unused list area
+ * @brief add vtma_space to vm's unused list area:
+ * this function init the vm_task_mm_area for vm_mm struct and 
+ * add it to vm_mm unused vtma list.
  * 
- * @param z_mm 
- * @param v_area 
- * @return int 
+ * @param z_mm : the vm_mm struct
+ * @param v_area : the virtual space of vm_mm
+ * @return int  
+ * 0    -- success
+ * !0   -- failed
  */
 static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
@@ -30,7 +34,7 @@ static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_a
     vtma->vm_tma_flag = 0;
     vtma->vm_id = 0;
     
-    /*** try to reduce memory comsumer */
+    /*** try to reduce memory comsumption */
 
 
     /* add vtma free list to mm_struct unused list */
@@ -42,11 +46,14 @@ static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_a
 }
 
 /**
- * @brief add vtma_space to vm's used list area
+ * @brief add vtma_space to vm's used list area:
+ * this function add the v_area space to vm_mm struct list
  * 
- * @param z_mm 
- * @param v_area 
+ * @param z_mm :  the vm_mm struct
+ * @param v_area : the virtual space of vm_mm
  * @return int 
+ * 0    --  success
+ * !0   --  error
  */
 static int add_used_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
@@ -58,12 +65,13 @@ static int add_used_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_are
 }
 
 
-
 /**
- * @brief this function for init the vma struct for vm's virtual address space
+ * @brief Init a vtma struct for vm's virtual address space:
+ * this function init a vtma struct using given para('base' , 'size'),
+ * and allocate a physical memory for this struce.
  * 
- * @param base 
- * @param size 
+ * @param base : vtma virtual space's bass address 
+ * @param size : vtma virtual space's size(bytes)
  * @return struct vm_task_mm_area* 
  */
 static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t size)
@@ -84,9 +92,12 @@ static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t siz
 }
 
 /**
- * @brief initial vm_mm struct for guest vm
+ * @brief init vm_mm struct for guest vm:
+ * this function init the vm_mm struct for vm, including init vtma list and 
+ * set the origin virtual space for vm, call  alloc_vm_task_mm_area func to init 
+ * specific vtma struct and add it to unused vtma list.
  * 
- * @param this_vm 
+ * @param this_vm : vm struct for store vm_mm struct
  */
 static void zvm_mm_struct_init(struct vm *this_vm)
 {
@@ -129,7 +140,9 @@ static void zvm_mm_struct_init(struct vm *this_vm)
 
 
 /**
- * @brief alloc physical memory for vtma
+ * @brief alloc memory block for vtma:
+ * this function divide the vtma to some blocks, and allocate 
+ * physical memory to these blocks.
  * 
  * @param z_mm 
  * @param v_area 
@@ -137,6 +150,51 @@ static void zvm_mm_struct_init(struct vm *this_vm)
  */
 static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
-    
+    uint64_t blk_count, i;
+    struct mem_block *block;
+    block = k_malloc(sizeof(struct mem_block));
+
+    init_list(&v_area->blk_list);
+
+    v_area->vm_tma_flag |= BLK_MAP;
+
+    /* virtual size / 4k block size */
+    blk_count = v_area->area_size >> BLK_MEM_SHIFT;
+
+    /* allocate physical memory for block */
+    for(i=0; i<blk_count; i++){
+        memset(block, 0, sizeof(struct mem_block));
+        block->phy_pointer = k_malloc(BLK_MEM_SIZE);
+        if(block->phy_pointer == NULL){
+            pr_err("allocate memory error!");
+            return -1;
+        }
+        /* get the block number */
+        block->cur_bn_offset = i+1;
+        /* set the block flag */
+        block->blk_flag = 0x1000 & 0xffff;
+        /* get the physical address */
+        block->phy_base = (uint64_t)block->phy_pointer;
+        
+        list_add_after(&v_area->blk_list, &block->blk_list);
+    }
+    return 0;
+}
+
+/**
+ * @brief map virtual addr 'v_area' to physical addr 'phy'
+ * this function aim to build the map from virt to phys,
+ * when we want to read/write/exec the code in memory, we should find the 
+ * physical memory address, but how system auto find the physical address
+ * through the virtual address? 
+ * 
+ * @param z_mm 
+ * @param v_area 
+ * @return int 
+ */
+static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
+{
+
+    return 0;
 }
 

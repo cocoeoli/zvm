@@ -26,9 +26,16 @@
 
 
 /* VM memory type */
-#define IO_MEM          0x01
-#define NORMAL_MEM      0X02
-#define MEM_TYPE_MASK   0Xff
+#define IO_MEM          0x00000001
+#define NORMAL_MEM      0X00000002
+#define MEM_TYPE_MASK   0X000000ff
+
+#define BLK_MAP         0x01000000
+#define PGE_MAP         0x02000000
+
+/* memory type size */
+#define BLK_MEM_SIZE    0x1000
+#define BLK_MEM_SHIFT   (12)
 
 /* 64 bits virtual address */
 typedef uint64_t virt_addr;
@@ -109,6 +116,9 @@ struct vm_task_mm_area {
 
     /* mm flag for user, see VM_MM_*  flag */
     uint16_t    vm_tma_flag;
+
+    /* mem_block lists for physical memmory management */
+    struct  list_addr_t blk_list;
 };
 
 /**
@@ -164,6 +174,27 @@ struct zvm_mem_slot {
     uint64_t    gpf_vase;
 };
 
+/**
+ * @brief mem_block record the translation relation of virt addr to phy addr
+ * 
+ */
+struct mem_block{
+    /* block num of this vtma */
+    uint64_t    cur_bn_offset;
+
+    /* physical base address of this mem_block */
+    uint64_t    phy_base;
+
+    /* physical address pointer*/
+    uint8_t     phy_pointer;
+
+    /* flag of this block */
+    uint16_t    blk_flag;
+
+    /* block list of this vtma */
+    struct  list_addr_t blk_list;
+};
+
 
 /**
  * @brief add vtma_space in vm's virtual space
@@ -184,5 +215,10 @@ static void zvm_mm_struct_init(struct vm *this_vm);
  * @brief alloc physical memory for vtma
  */
 static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
+
+/**
+ * @brief map virtual addr 'v_area' to physical addr 'phy'
+ */
+static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
 
 #endif /* ZVM_ASM_MM_H__ */
