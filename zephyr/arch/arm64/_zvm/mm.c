@@ -6,24 +6,18 @@
 
 #include<_zvm/asm/zvm_host.h>
 #include<_zvm/asm/mm.h>
-
-#define test_heap_size  4096
-
-K_HEAP_DEFINE(vm_test_heap, test_heap_size);
+#include<arch/arm64/arm_mmu.h>
 
 
 
-static int ipa_mem_abort(struct zvm_vcpu *vcpu, virt_addr hva_addr, struct zvm_mem_slot *memslots)
+static int __map_vtma_to_block(struct arm_mmu_ptable *ptable, const char *name,
+        uintptr_t phys, uintptr_t virt, size_t size, uint32_t attrs)
 {
+    int ret;
 
-    /* give a lock for this mem lock for this thread */
+    if(size) {
+        
+    }
 
 
-    /* vm_struct for record the page list */
-    
-
-    /* allocate a memory region for hva */
-    
-
-    /* unlock the mem lock for this thread */
 }

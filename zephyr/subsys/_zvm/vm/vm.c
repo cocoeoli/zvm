@@ -97,8 +97,9 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
             return -1;
         }
 
-        if(map_vtma_to_block()){
-            
+        if(map_vtma_to_block(z_mm, vtma)){
+            pr_err("mapping block error!");
+            return -1;
         }
     }
 

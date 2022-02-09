@@ -187,6 +187,8 @@ static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v
  * when we want to read/write/exec the code in memory, we should find the 
  * physical memory address, but how system auto find the physical address
  * through the virtual address? 
+ * @answer: the answer is made mmu enable, and build the mapping relationship
+ * between virt and phys, but there is a question exist that we should build a 
  * 
  * @param z_mm 
  * @param v_area 
@@ -194,7 +196,14 @@ static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v
  */
 static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
+    int ret;
+    struct mem_block *blk;
+    uint64_t base_addr = v_area->area_start;
+    uint64_t size = v_area->area_size;
 
+    list_for_each_entry(blk, &v_area->blk_list, blk_list){
+        ret = __map_vtma_to_block();
+    }
     return 0;
 }
 
