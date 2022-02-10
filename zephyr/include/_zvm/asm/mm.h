@@ -18,6 +18,10 @@
 #include <_zvm/list_ops.h>
 
 
+/* virtual base address, aim to avoid conflict with exist virt address  */
+#define HYP_VIRT_BASE_ADDR  ((1UL)<<32)
+
+/* block size in virt space */
 #define default_mm_block_size   ((1UL)<<(12))
 
 /* 64bits machine virtual address space */
@@ -220,5 +224,10 @@ static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v
  * @brief map virtual addr 'v_area' to physical addr 'phy'
  */
 static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
+
+/**
+ * @brief map vtma to physical block address:
+ */
+static int __map_vtma_to_block(uintptr_t phys, uintptr_t virt, size_t size, uint32_t attrs);
 
 #endif /* ZVM_ASM_MM_H__ */

@@ -107,6 +107,9 @@ struct vm {
 /* Allocate vmid. */
 uint32_t _allocate_vmid(void);
 
+/* @brief init guest vm memory manager */
+static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag);
+
 static inline void _find_next_vmid(void){
     do{
         zvm_overall_info->next_alloc_vmid++;

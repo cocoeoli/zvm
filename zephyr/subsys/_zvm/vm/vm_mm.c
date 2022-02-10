@@ -144,9 +144,11 @@ static void zvm_mm_struct_init(struct vm *this_vm)
  * this function divide the vtma to some blocks, and allocate 
  * physical memory to these blocks.
  * 
- * @param z_mm 
- * @param v_area 
- * @return int 
+ * @param z_mm : vm's mm struct
+ * @param v_area : vtma struct
+ * @return int :
+ * 0    --  success
+ * !0   --  error code
  */
 static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
@@ -190,9 +192,11 @@ static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v
  * @answer: the answer is made mmu enable, and build the mapping relationship
  * between virt and phys, but there is a question exist that we should build a 
  * 
- * @param z_mm 
- * @param v_area 
- * @return int 
+ * @param z_mm : vm's mm struct
+ * @param v_area : vtma for each task
+ * @return int :
+ * 0    --  success
+ * !0   --  error code
  */
 static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
@@ -200,10 +204,15 @@ static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area 
     struct mem_block *blk;
     uint64_t base_addr = v_area->area_start;
     uint64_t size = v_area->area_size;
+    uint64_t base;
 
     list_for_each_entry(blk, &v_area->blk_list, blk_list){
-        ret = __map_vtma_to_block();
+        /* find the virt address for this block */
+        base = base_addr + (blk->cur_bn_offset * BLK_MEM_SIZE);
+
+        /* add mapping from virt to block physcal address */
+        ret = __map_vtma_to_block(blk->phy_base, &base, size, 0);
     }
-    return 0;
+    return ret;
 }
 

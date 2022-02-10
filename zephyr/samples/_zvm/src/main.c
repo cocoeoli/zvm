@@ -11,11 +11,34 @@
 #include <sys/printk.h>
 #include <shell/shell.h>
 #include <zvm.h>
+#include <_zvm/vm/vm.h>
+#include <_zvm/asm/mm.h>
+
+
+void vm_mm_test()
+{
+   struct vm *vm;
+   uint64_t base_addr = 0;
+   uint64_t size = 4096;
+   int ret = 0;
+
+   vm = k_malloc(sizeof(struct vm));
+
+   zvm_mm_struct_init(vm);
+
+   ret = vm_mm_init(vm, base_addr, size, 0);
+   if(!ret)
+      printk("mm test error!");
+   else
+      printk("mm init successful!");
+
+}
 
 int main(int argc, char **argv){
-   int ret = zvm_init();
-   
-   printk("ZVM test. ret = %d.\n", ret);
-   zvm_info_print(zvm_overall_info->hw_info);
+   //int ret = zvm_init();
+   //printk("ZVM test. ret = %d.\n", ret);
+   //zvm_info_print(zvm_overall_info->hw_info);
+   vm_mm_test();
+
    return 0;
 }

@@ -29,7 +29,13 @@ uint32_t _allocate_vmid(){
 
 
 /**
- * @brief init guest vm memory manager
+ * @brief init guest vm memory manager:
+ * this function aim to init vm's memory manger,for below step:
+ * 1. allocate virt space to vm(base/size), and distribute vtma_list to it.
+ * 2. add this vtma to used_vtma_list.
+ * 3. divide vtma area to block and init block list, 
+ * then allocate physical space to these block.
+ * 4. build page table from vtma virt address to block physical address. 
  * 
  * @param vm 
  * @param base 
@@ -40,13 +46,12 @@ uint32_t _allocate_vmid(){
 static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag)
 {
     uint64_t start_addr, end_addr, this_vma_end;
-    this_vma_end = base + size;
-
-    struct zvm_mm_struct *z_mm;
-
+    struct zvm_mm_struct *z_mm = &vm->z_mm;
     struct vm_task_mm_area *vtma, *new_vtma, *old_vtma;
+
     new_vtma = NULL;
     old_vtma = NULL;
+    this_vma_end = base + size;
 
     /* ** check vm_mm's flag */
 
@@ -71,7 +76,7 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
     if((old_vtma == NULL) && (new_vtma==NULL)){
         pr_err("useless vtma config!");
         /* ** release the vtma */
-        return NULL;
+        return -1;
     }
 
     list_del(&vtma->vma_list);
@@ -102,5 +107,7 @@ static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag
             return -1;
         }
     }
+
+    return 0;
 
 }
