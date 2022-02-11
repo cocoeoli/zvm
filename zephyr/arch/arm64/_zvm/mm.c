@@ -30,7 +30,7 @@
  * 0    --  success
  * !0   --  error
  */
-static int __map_vtma_to_block(uintptr_t phys, uint8_t *virt, size_t size, uint32_t attrs)
+int __map_vtma_to_block(uintptr_t phys, uint8_t *virt, size_t size, uint32_t attrs)
 {
     int ret;
     uint8_t *buf = phys + HYP_VIRT_BASE_ADDR;

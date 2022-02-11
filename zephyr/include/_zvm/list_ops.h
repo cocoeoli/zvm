@@ -4,6 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#ifndef LIST_OPS_H__
+#define LIST_OPS_H__
+
 #include <zephyr.h>
 #include <stdint.h>
 #include <_zvm/vm/vm.h>
@@ -71,15 +74,15 @@ static void inline list_del(struct list_addr_t *list)
 	list->prev = (void *)0x20;
 }
 
-#define container_of(ptr, name, member) \
-	(name *)((unsigned char *)ptr - ((unsigned char *)&(((name *)0)->member)))
+#define container_of(ptr, name, member)	(name *)((unsigned char *)ptr - ((unsigned char *)&(((name *)0)->member)))
 
-#define list_entry(ptr, type, member)	\
-	container_of(ptr, type, member)
+#define list_entry(ptr, type, member)	container_of(ptr, type, member)
 
 #define list_for_each_entry(pos, head, member)	\
-	for (pos = list_entry((head)->next, typeof(*pos), member); \
-	     &pos->member != (head); \
-	     pos = list_entry(pos->member.next, typeof(*pos), member))
+	for (pos = list_entry((head)->next, __typeof__(*pos), member); \
+	&pos->member != (head); \
+	pos = list_entry(pos->member.next, __typeof__(*pos), member))
 
 /* above code may have copyright risk */
+
+#endif  /*LIST_OPS_H__*/

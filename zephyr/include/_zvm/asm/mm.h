@@ -41,6 +41,9 @@
 #define BLK_MEM_SIZE    0x1000
 #define BLK_MEM_SHIFT   (12)
 
+/* VM's id */
+typedef uint16_t VM_ID;
+
 /* 64 bits virtual address */
 typedef uint64_t virt_addr;
 
@@ -86,14 +89,6 @@ struct vm_gpa_memory_region{
 
     /* related hva addr of this region */
     virt_addr    vm_addr;
-};
-
-/**
- * @brief vm_gpa_address_space struct for recording the total gpa info for a guest os
- * 
- */
-struct vm_gpa_address_space{
-    
 };
 
 
@@ -198,36 +193,5 @@ struct mem_block{
     /* block list of this vtma */
     struct  list_addr_t blk_list;
 };
-
-
-/**
- * @brief add vtma_space in vm's virtual space
- */
-static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
-
-/**
- * @brief this function for init the vma struct for vm's virtual address space
- */
-static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t size);
-
-/**
- * @brief initial vm_mm struct for guest vm
- */
-static void zvm_mm_struct_init(struct vm *this_vm);
-
-/**
- * @brief alloc physical memory for vtma
- */
-static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
-
-/**
- * @brief map virtual addr 'v_area' to physical addr 'phy'
- */
-static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
-
-/**
- * @brief map vtma to physical block address:
- */
-static int __map_vtma_to_block(uintptr_t phys, uintptr_t virt, size_t size, uint32_t attrs);
 
 #endif /* ZVM_ASM_MM_H__ */

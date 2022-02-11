@@ -4,5 +4,6 @@ zephyr_library()
 
 zephyr_library_sources(
   hyp_vector.S
+  mm.c
 )
 

@@ -12,6 +12,7 @@
 #include <toolchain/gcc.h>
 
 #include <_zvm/asm/zvm_host.h>
+#include <_zvm/asm/mm.h>
 #include <_zvm/os/os.h>
 #include <_zvm/zvm.h>
 
@@ -77,7 +78,7 @@ struct vm_desc {
 };
 
 /**
- * @brief vm struct for getting the   
+ * @brief vm struct for getting the  guest vm 
  */
 struct vm {
     VM_ID vmid;
@@ -90,7 +91,7 @@ struct vm {
     struct k_spinlock spinlock;
 
     /* Block memory allocated for this vm. */
-    struct zvm_mm_struct z_mm;
+    struct zvm_mm_struct *z_mm;
 
     /* OS the vm loading. */
     struct os *os;
@@ -108,7 +109,7 @@ struct vm {
 uint32_t _allocate_vmid(void);
 
 /* @brief init guest vm memory manager */
-static int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag);
+int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag);
 
 static inline void _find_next_vmid(void){
     do{

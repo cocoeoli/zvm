@@ -5,6 +5,7 @@
 
 zephyr_sources_ifdef(
     CONFIG_ZVM
+    vm_mm.c
     vm_ops.c
     vm.c
 )

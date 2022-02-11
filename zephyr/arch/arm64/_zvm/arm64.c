@@ -10,7 +10,7 @@
  */
 #include <kernel.h>
 #include <kernel_internal.h>
-#include <cpu.h>
+#include <arch/cpu.h>
 #include <_zvm/debug/debug.h>
 
 /**

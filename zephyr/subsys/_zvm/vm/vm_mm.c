@@ -7,7 +7,18 @@
 #include <_zvm/zvm.h>
 #include <_zvm/asm/mm.h>
 #include <_zvm/vm/vm.h>
+#include <_zvm/vm/vm_mm.h>
 #include <_zvm/list_ops.h>
+
+/**
+ * @brief add vtma_space in vm's virtual space
+ */
+static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area);
+
+/**
+ * @brief this function for init the vma struct for vm's virtual address space
+ */
+static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t size);
 
 /**
  * @brief add vtma_space to vm's unused list area:
@@ -55,7 +66,7 @@ static int add_unused_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_a
  * 0    --  success
  * !0   --  error
  */
-static int add_used_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
+int add_used_vtma_space(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
     if(!v_area)
         return -1;
@@ -99,7 +110,7 @@ static struct vm_task_mm_area *alloc_vm_task_mm_area(uint64_t base, uint64_t siz
  * 
  * @param this_vm : vm struct for store vm_mm struct
  */
-static void zvm_mm_struct_init(struct vm *this_vm)
+void zvm_mm_struct_init(struct vm *this_vm)
 {
     int ret;
     uint64_t base_addr, size;
@@ -107,7 +118,7 @@ static void zvm_mm_struct_init(struct vm *this_vm)
     struct vm_task_mm_area *vtma;
 
     /* get mm struct */
-    struct zvm_mm_struct *z_mm = &this_vm->z_mm;
+    struct zvm_mm_struct *z_mm = this_vm->z_mm;
 
     z_mm->this_vm = this_vm;
 
@@ -150,7 +161,7 @@ static void zvm_mm_struct_init(struct vm *this_vm)
  * 0    --  success
  * !0   --  error code
  */
-static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
+int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
     uint64_t blk_count, i;
     struct mem_block *block;
@@ -198,7 +209,7 @@ static int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v
  * 0    --  success
  * !0   --  error code
  */
-static int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
+int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
 {
     int ret;
     struct mem_block *blk;

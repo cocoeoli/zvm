@@ -41,9 +41,6 @@ struct getopt_state *state;
  */
 int _create_vm(size_t argc, char **argv){
 
-	/* get the descriptor of created vm */
-	struct vm_desc *vmdesc = argv[0];
-
 	if(!is_el2_now()){
 		pr_err("Current exception level is not EL2.");
 		return -EACCES;
