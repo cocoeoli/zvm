@@ -68,9 +68,24 @@ int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag)
 		if ((base == start_addr) && (this_vma_end == end_addr)) {
 			new_vtma = vtma;
 			break;
-		}else{  /* first try,  other situation is regard as error ! */
+		}else if(base == start_addr && this_vma_end < end_addr){
+            old_vtma = vtma;
+            old_vtma->area_start = this_vma_end;
+            old_vtma->area_size -= size;
+        }
+        else{  /* first try,  other situation is regard as error ! */
             pr_err("there are some old vmm_area!");
         }
+        new_vtma = k_malloc(sizeof(struct vm_task_mm_area));
+        if(!new_vtma){
+            pr_err("allocate memory error!");
+            return -1;
+        }
+        new_vtma->area_start = base;
+        new_vtma->area_end = base + size -1;
+        new_vtma->area_size = size;
+        new_vtma->vm_tma_flag = 0;
+        break;
     }
 
     /* init vtma failed */

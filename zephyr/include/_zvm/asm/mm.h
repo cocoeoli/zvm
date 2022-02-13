@@ -185,7 +185,7 @@ struct mem_block{
     uint64_t    phy_base;
 
     /* physical address pointer*/
-    uint8_t     phy_pointer;
+    uint8_t     *phy_pointer;
 
     /* flag of this block */
     uint16_t    blk_flag;

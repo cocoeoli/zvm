@@ -183,7 +183,7 @@ int alloc_vm_memory(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area)
             return -1;
         }
         /* get the block number */
-        block->cur_bn_offset = i+1;
+        block->cur_bn_offset = i;
         /* set the block flag */
         block->blk_flag = 0x1000 & 0xffff;
         /* get the physical address */
@@ -222,7 +222,7 @@ int map_vtma_to_block(struct zvm_mm_struct *z_mm, struct vm_task_mm_area *v_area
         base = base_addr + (blk->cur_bn_offset * BLK_MEM_SIZE);
 
         /* add mapping from virt to block physcal address */
-        ret = __map_vtma_to_block(blk->phy_base, &base, size, 0);
+        ret = __map_vtma_to_block(blk->phy_base, base, size, 0);
     }
     return ret;
 }

@@ -19,18 +19,21 @@
 void vm_mm_test()
 {
    struct vm *vm;
+   struct zvm_mm_struct *z_mm;
    uint64_t base_addr = 0x0;
    uint64_t size = 4096;
    int ret = 0;
 
    vm = k_malloc(sizeof(struct vm));
+   z_mm = k_malloc(sizeof(struct zvm_mm_struct));
    printk("prepare alloc memory!");
+   vm->z_mm = z_mm;
 
    zvm_mm_struct_init(vm);
    printk("mm_struct init successful!");
 
-   ret = vm_mm_init(vm, base_addr, size, 0);
-   if(!ret)
+   ret = vm_mm_init(vm, base_addr, size, NORMAL_MEM);
+   if(ret)
       printk("mm test error!");
    else
       printk("mm init successful!");
@@ -38,9 +41,9 @@ void vm_mm_test()
 }
 
 int main(int argc, char **argv){
-   int ret = zvm_init();
-   printk("ZVM test. ret = %d.\n", ret);
-   zvm_info_print(zvm_overall_info->hw_info);
+   //int ret = zvm_init();
+   //printk("ZVM test. ret = %d.\n", ret);
+   //zvm_info_print(zvm_overall_info->hw_info);
    vm_mm_test();
 
    return 0;

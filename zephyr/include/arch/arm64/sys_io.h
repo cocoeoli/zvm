@@ -68,7 +68,7 @@ static ALWAYS_INLINE void sys_write16(uint16_t data, mem_addr_t addr)
 static ALWAYS_INLINE uint32_t sys_read32(mem_addr_t addr)
 {
 	uint32_t val;
-
+	
 	__asm__ volatile("ldr %w0, [%1]" : "=r" (val) : "r" (addr));
 
 	__DMB();

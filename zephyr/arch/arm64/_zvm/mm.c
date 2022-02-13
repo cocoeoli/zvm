@@ -30,12 +30,12 @@
  * 0    --  success
  * !0   --  error
  */
-int __map_vtma_to_block(uintptr_t phys, uint8_t *virt, size_t size, uint32_t attrs)
+int __map_vtma_to_block(uintptr_t phys, uintptr_t virt, size_t size, uint32_t attrs)
 {
     int ret;
-    uint8_t *buf = phys + HYP_VIRT_BASE_ADDR;
+    uint8_t *buf = virt + HYP_VIRT_BASE_ADDR;
 
-    z_phys_map(&virt, z_mem_phys_addr(buf), size, attrs|K_MEM_CACHE_WB|K_MEM_PERM_RW);
+    z_phys_map(buf, z_mem_phys_addr(phys), size, attrs|K_MEM_CACHE_WB|K_MEM_PERM_RW);
       
     return 0;
 }

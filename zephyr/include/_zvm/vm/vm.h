@@ -27,6 +27,9 @@ typedef uint16_t VM_ID;
 /* vm image's name length */ 
 #define RAMDISK_NAME_LEN    32
 
+/* cpu_per_vm */
+#define CONFIG_VCPU_PER_VM  1
+
 
 /**
  * @TODO We support SMP later. 
@@ -102,7 +105,7 @@ struct vm {
     struct zvm_arch *arch;
 
     /* A array for collect vcpu. */
-    struct vm_vcpu *vcpus[CONFIG_MAX_VCPU_PER_VM];
+    struct vm_vcpu *vcpus[CONFIG_VCPU_PER_VM];
 };
 
 /* Allocate vmid. */
