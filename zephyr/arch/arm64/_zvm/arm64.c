@@ -11,6 +11,7 @@
 #include <kernel.h>
 #include <kernel_internal.h>
 #include <arch/cpu.h>
+#include <arch/arm64/lib_helpers.h>
 #include <_zvm/debug/debug.h>
 
 /**
@@ -25,13 +26,11 @@ static inline bool is_basic_hardware_support()
     bool is_kernel_run_el2;
     /* Detect hyp mode available. */
     if(!is_el_implemented(MODE_EL2)){
-        pr_err("Hyp mode not available.\n");
+        pr_err("hyp mode not available.\n");
         return -ENODEV;
     }
 
-    /* Detect whether OS is running on EL2? 
-       is vhe available?
-    */
+    /* Detect whether OS is running on EL2? is vhe available? */
     is_kernel_run_el2 = is_el2_now();
     
     return is_kernel_run_el2;
@@ -49,12 +48,18 @@ int init_hyp_mode()
 }
 */
 
+/**
+ * @brief check arm64 arch support for zvm
+ * 
+ * @return int 
+ */
 int zvm_arch_init(void){
     bool in_vhe_mode;
     int ret = 0, err;
 
     /* Is hyp、vhe available? */
     in_vhe_mode = is_basic_hardware_support();
+
     
     
     return ret;
@@ -75,5 +80,7 @@ int zvm_arch_init(void){
  * @ zvm_vcpu struct
  * @ device module
  */
+
+
 
 
