@@ -127,3 +127,65 @@ int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag)
     return 0;
 
 }
+
+/**
+ * @brief allocate a vcpu struct and alloca memory
+ * 
+ * @return struct vcpu* 
+ */
+static struct vcpu *allocate_vcpu(void)
+{
+    struct vcpu *vcpu;
+
+    vcpu = k_malloc(sizeof(vcpu));
+    memset(vcpu, 0, sizeof(struct vcpu));
+    if(!vcpu){
+        return NULL;
+    }
+
+    vcpu->virq_struct = k_malloc(sizeof(struct virq_struct));
+    if(vcpu->virq_struct){
+        k_free(vcpu);
+        return  NULL;
+    }
+
+    /* ** what is vmcs? io block, wait a minut */
+
+    return vcpu;
+}
+
+
+/**
+ * @brief Create a vcpus object for zvm run task
+ * 
+ * @param vm 
+ * @return int 
+ */
+
+int create_vcpus(struct vm *vm)
+{
+    char vm_name[VM_NAME_LEN];
+    int i;
+    struct vcpu *vcpu;
+
+
+    for(i=0; i<vm->vcpu_num; i++){
+        memset(vm_name, 0, VM_NAME_LEN);
+        snprintk(vm_name, VM_NAME_LEN-1, "%s's vcpu--id-%d", vm->vm_name, i);
+        
+        /* ** create a thread and bind to this vcpu */
+
+
+        /* alloc_vcpu struct */
+        vcpu = allocate_vcpu();
+        if(!vcpu){
+            /* free task */
+            return -1;
+        }
+
+        if(!vcpu){
+            pr_err("create vcpu error!");
+        }
+        
+    }
+}

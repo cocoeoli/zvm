@@ -10,11 +10,13 @@
 #define ZVM_HOST_H__
 
 #include <toolchain/gcc.h>
+#include <stddef.h>
 
 #include <_zvm/asm/zvm_host.h>
 #include <_zvm/asm/mm.h>
 #include <_zvm/os/os.h>
 #include <_zvm/zvm.h>
+#include <_zvm/virt_irq.h>
 
 #include "vm_ops.h"
 #include <stdint.h>
@@ -42,6 +44,17 @@ struct vcpu {
 
     /* VM run info record. */
     struct zvm_run *run;
+
+    /* virq struct for this vcpu */
+    struct virq_struct *virq_struct;
+
+};
+
+/* vcpu task struct */
+struct vcpu_task{
+    /* point to vcpu struct */
+    void *v_date;   
+
 };
 
 enum {
@@ -99,6 +112,9 @@ struct vm {
     /* OS the vm loading. */
     struct os *os;
 
+    /* vcpu struct lidt*/
+    struct vcpu **vcpu;
+
     /* Bind the vm and the os type ops. */
     struct vm_ops *ops;
 
@@ -106,6 +122,9 @@ struct vm {
 
     /* A array for collect vcpu. */
     struct vm_vcpu *vcpus[CONFIG_VCPU_PER_VM];
+
+    /* vm's name */
+    char vm_name[VM_NAME_LEN];
 };
 
 /* Allocate vmid. */
