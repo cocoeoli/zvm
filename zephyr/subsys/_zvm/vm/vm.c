@@ -8,6 +8,10 @@
 
 #include <toolchain/gcc.h>
 
+#include <kernel.h>
+#include <kernel/thread.h>
+#include <kernel/thread_stack.h>
+
 #include <_zvm/zvm.h>
 #include <_zvm/asm/mm.h>
 #include <_zvm/vm/vm.h>
@@ -129,6 +133,44 @@ int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag)
 }
 
 /**
+ * @brief Create a vcpu task object and create a thread bind to this vcpu
+ * This function aim to create a task for an vcpu, we treat the vcpu as a 
+ * thread, then create and initial a thread for it.
+ * *****************---******************
+ * warning: there is some unfinished error in thread's stack init, we must 
+ * spend some time to make it dynamicly allocate stack space.
+ * **************************************
+ * @param name : vcpu task's name 
+ * @param func : the thread exec function
+ * @param arg : arguments for func
+ * @param prio : priority of this thread
+ * @param stack_size : thread's stack size
+ * @param flag : task's option flag
+ * @return struct vcpu_task* 
+ */
+struct vcpu_task *create_vcpu_task(char *name, k_thread_entry_t func, void *arg,
+                    uint8_t prio, uint32_t flag)
+{
+    struct vcpu_task *task;
+
+    /* **check priority of thread */
+
+    /* **jude weather it is a realtime thread */
+
+    task = k_malloc(sizeof(struct vcpu_task));
+    if(!task){
+        pr_err("Create task error!");
+        return NULL;
+    }
+    memset(task, 0, sizeof(struct vcpu_task));
+    
+    k_thread_create(task->vcpu_thread, task->vt_stack, VCPU_THREAD_STACKSIZE,
+                func, NULL, NULL, NULL, prio, 0, K_NO_WAIT);
+    
+    return task;
+}
+
+/**
  * @brief allocate a vcpu struct and alloca memory
  * 
  * @return struct vcpu* 
@@ -167,25 +209,39 @@ int create_vcpus(struct vm *vm)
     char vm_name[VM_NAME_LEN];
     int i;
     struct vcpu *vcpu;
-
+    struct vcpu_task *task;
 
     for(i=0; i<vm->vcpu_num; i++){
         memset(vm_name, 0, VM_NAME_LEN);
         snprintk(vm_name, VM_NAME_LEN-1, "%s's vcpu--id-%d", vm->vm_name, i);
         
         /* ** create a thread and bind to this vcpu */
-
+        task = create_vcpu_task(vm_name, vm->code_entry_point, NULL, VCPU_THREAD_PRIO, 0);
 
         /* alloc_vcpu struct */
         vcpu = allocate_vcpu();
         if(!vcpu){
-            /* free task */
+            /* **free task */
+            k_free(task);
+            pr_err("create vcpu failed!");
             return -1;
         }
 
-        if(!vcpu){
-            pr_err("create vcpu error!");
-        }
+        /* init vcpu struct */
+        task->v_date = vcpu;
+        vcpu->task = task;
+        vcpu->vcpu_id = i;
+        vcpu->vm = vm;
+        /* init vcpu list */
+        init_list(&vcpu->vcpu_lists);
         
+        /* ** init vcpu virt_irq struct: prepare to add */
+        
+        /* init vm vpcu list */
+        vm->vcpu[i] = vcpu;
+        vcpu->next_vcpu = NULL;
+        if(i)
+            vm->vcpu[i-1]->next_vcpu = vcpu;
     }
+    return 0;
 }

@@ -12,6 +12,8 @@
 #include <toolchain/gcc.h>
 #include <stddef.h>
 
+#include <kernel/thread.h>
+
 #include <_zvm/asm/zvm_host.h>
 #include <_zvm/asm/mm.h>
 #include <_zvm/os/os.h>
@@ -32,6 +34,13 @@ typedef uint16_t VM_ID;
 /* cpu_per_vm */
 #define CONFIG_VCPU_PER_VM  1
 
+/* vcpu stack thread's size used by each vcpu*/
+#define VCPU_THREAD_STACKSIZE 1024
+
+/* priority of thread */
+#define VCPU_THREAD_PRIO 0x4
+
+struct vcpu_task;
 
 /**
  * @TODO We support SMP later. 
@@ -48,12 +57,27 @@ struct vcpu {
     /* virq struct for this vcpu */
     struct virq_struct *virq_struct;
 
+    /* vcpu's related task */
+    struct vcpu_task *task;
+
+    /* vcpu's list for vm */
+    struct list_addr_t vcpu_lists;
+
+    /* vcpu list's next vcpu */
+    struct vcpu *next_vcpu;
+
 };
 
 /* vcpu task struct */
 struct vcpu_task{
     /* point to vcpu struct */
     void *v_date;   
+
+    /* vcpu's thread struct */
+    struct k_thread *vcpu_thread;
+
+    /* thread's stack */
+    K_KERNEL_STACK_MEMBER(vt_stack, VCPU_THREAD_STACKSIZE);
 
 };
 
@@ -125,6 +149,9 @@ struct vm {
 
     /* vm's name */
     char vm_name[VM_NAME_LEN];
+
+    /* vm image's code entry */
+    void *code_entry_point;
 };
 
 /* Allocate vmid. */
