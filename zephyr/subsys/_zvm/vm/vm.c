@@ -211,6 +211,14 @@ int create_vcpus(struct vm *vm)
     struct vcpu *vcpu;
     struct vcpu_task *task;
 
+    /* ** lock the vm struct for operation */
+
+    /* check vcpu args */
+    if(vm->vcpu_num > ZVM_MAX_VCPUS){
+        pr_err("Vcpu counts is too big!");
+        return -1;
+    }
+
     for(i=0; i<vm->vcpu_num; i++){
         memset(vm_name, 0, VM_NAME_LEN);
         snprintk(vm_name, VM_NAME_LEN-1, "%s's vcpu--id-%d", vm->vm_name, i);
@@ -220,6 +228,11 @@ int create_vcpus(struct vm *vm)
 
         /* alloc_vcpu struct */
         vcpu = allocate_vcpu();
+
+        /* allocate vcpu context */
+        vcpu->run = k_malloc(sizeof(struct zvm_run)); 
+
+
         if(!vcpu){
             /* **free task */
             k_free(task);

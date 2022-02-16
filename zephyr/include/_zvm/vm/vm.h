@@ -51,7 +51,7 @@ struct vcpu {
 
     uint32_t vcpu_id;
 
-    /* VM run info record. */
+    /* VM run info record. context of this vm*/
     struct zvm_run *run;
 
     /* virq struct for this vcpu */
