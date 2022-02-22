@@ -199,8 +199,9 @@ static struct vcpu *allocate_vcpu(void)
 
 /**
  * @brief Create a vcpus object for zvm run task
- * 
- * @param vm 
+ * This function aim to create a vcpu struct and allocate memory for it,
+ * and then, init the vcpu struct.
+ * @param vm: the vm struct passed in
  * @return int 
  */
 
@@ -256,5 +257,9 @@ int create_vcpus(struct vm *vm)
         if(i)
             vm->vcpu[i-1]->next_vcpu = vcpu;
     }
+    /* ** register vcpu op function */
+
+
     return 0;
 }
+

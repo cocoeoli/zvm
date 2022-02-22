@@ -49,6 +49,10 @@ struct vcpu {
     /* Which vm this vCPU belongs to. */
     struct vm *vm;
 
+    /* bind to physical cpu */
+    int cpu;
+
+    /* vcpu's id */
     uint32_t vcpu_id;
 
     /* VM run info record. context of this vm*/
@@ -65,6 +69,9 @@ struct vcpu {
 
     /* vcpu list's next vcpu */
     struct vcpu *next_vcpu;
+
+    /* arch related vcpu info */
+    struct zvm_vcpu_arch arch;
 
 };
 
@@ -159,6 +166,11 @@ uint32_t _allocate_vmid(void);
 
 /* @brief init guest vm memory manager */
 int vm_mm_init(struct vm *vm, uint64_t base, uint64_t size, uint64_t flag);
+
+/**
+ * @brief Create a vcpus object for zvm run task. 
+ */
+int create_vcpus(struct vm *vm);
 
 static inline void _find_next_vmid(void){
     do{

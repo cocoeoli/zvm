@@ -13,6 +13,7 @@
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
 #include <_zvm/debug/debug.h>
+#include <_zvm/vm/vm.h>
 
 /**
  * @brief whether hyp and vhe is supported.
@@ -80,6 +81,70 @@ int zvm_arch_init(void){
  * @ zvm_vcpu struct
  * @ device module
  */
+
+/**
+ * @brief init work for first run this vcpu
+ * this function is for init some hardware feature for first build this 
+ * vcpu on this vm.
+ * @param vcpu : vcpu struct wait for test
+ * @return int 
+ */
+static int zvm_vcpu_first_init_run(struct vcpu *vcpu){
+    struct vm *vm = vcpu->vm;
+
+    /* whether is first run vcpu */
+    if(!vcpu->arch.first_run_vcpu)
+        return 0;
+    
+    vcpu->arch.first_run_vcpu = false;
+
+    /* ** enable vgic */
+
+    /* ** enable vtimer */
+
+
+}
+
+static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
+{
+    struct kvm_s2_mmu *mmu;
+
+    mmu = vcpu->arch.s2_mmu;
+
+    /* ** record the last run cpu to speed up with tlb and cache */
+
+    vcpu->cpu = cpu;
+
+    /* **load vgic for this vcpu */
+
+    /* **load vtimer for this vcpu */
+
+    /* VHE mode register load */
+    if(2)
+       zvm_vcpu_load_sysreg(vcpu); 
+
+}
+
+
+int zvm_arch_vcpu_run(struct vcpu *vcpu)
+{
+    struct zvm_run *run = vcpu->run;
+    int ret; 
+
+    /* ** judge whether it is first run vcpu */
+
+    /* first init cpu run */
+    ret = zvm_vcpu_first_init_run(vcpu);
+    if(ret)
+        return ret;
+    
+    /* ** process mmio access for this vcpu */
+
+    /* no premption for this vcpu */
+    /* no smp for this vcpu now */
+    zvm_arch_vcpu_load(vcpu, 0);
+
+}
 
 
 

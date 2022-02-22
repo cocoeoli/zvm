@@ -1,7 +1,8 @@
 /**
+ * 
  * @file mm.h
- * @author your name (you@domain.com)
- * @brief 
+ * @author xiongchenglai (xiongcl@hnu.edu.cn)
+ * @brief Define some struct for vmem struct 
  * @version 0.1
  * @date 2022-01-24
  * 
@@ -50,22 +51,6 @@ typedef uint64_t virt_addr;
 /* 64 bits physical address */
 typedef uint64_t phys_addr;
 
-/*
- * Address types:
- *  _gva_t - guest virtual address
- *  _gpa_t - guest physical address
- *  _gpa_pf - guest page frame number
- *  _hva_t - host virtual address
- *  _hpa_t - host physical address
- *  _hpa_pf - host page frame number
- */
-typedef uint64_t    _gva_t;
-typedef uint64_t    _gpa_t;
-typedef uint64_t    _gpa_pf;
-
-typedef uint64_t    _hva_t;
-typedef uint64_t    _hpa_t;
-typedef uint64_t    _hpa_pf;
 
 
 /**

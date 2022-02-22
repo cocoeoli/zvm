@@ -22,7 +22,7 @@ struct virq_desc{
 
     /* vcpu id */
     uint8_t vcpu_id;
-}
+};
 
 struct virq_struct{
     /* active irq */
@@ -44,7 +44,7 @@ struct virq_struct{
     /* virq desctription list */
     struct virq_desc this_vcpu_desc[VM_VIRQ_NUM];
 
-}
+};
 
 
 #endif // !_VIRT_IRQ_H_

@@ -13,6 +13,11 @@
 
 #include "pgtable-types.h"
 #include "vcpu.h"
+#include <_zvm/asm/pgtable-types.h>
+#include <_zvm/asm/zvm_host.h>
+#include <_zvm/vm/vm.h>
+
+#define ZVM_MAX_VCPUS 32
 
 struct zvm_arch {
     /* The VMID. */
@@ -40,6 +45,25 @@ struct vcpu_fault_info {
 	uint64_t hpfar_el2;		/* Hyp IPA Fault Address Register */
 };
 
+
+struct zvm_arch_stage2_mmu{
+    /* vmid for page table entry*/
+    uint64_t vmid_generation;
+    uint32_t vmid;
+
+    /* physical pgd address */
+    phys_addr pgd_phys;
+
+    /* pgt table entry */
+    struct zvm_arm_pgtable *pgt;
+
+    /* last ran vcpu id on each pcpu */
+    int *last_vcpu_ran;
+    
+};
+
+
+/* vcpu arch info */
 struct zvm_vcpu_arch {
     /* vCPU context regs info. */
     vcpu_context_t ctxt;
@@ -59,6 +83,33 @@ struct zvm_vcpu_arch {
 
     /* Don't run the guest. */
     bool pause;
+
+    /* first run this vpcu flag */
+    bool first_run_vcpu;
+
+    /* stage-2 paging translation */
+    struct zvm_arch_stage2_mmu *s2_mmu;
+};
+
+struct u_point_regs{
+    uint64_t    regs[31];
+
+    uint64_t    sp;
+
+    uint64_t    pc;
+
+    uint64_t    pstate;
+};
+
+/* arm aarch64 cpu context struct */
+struct zvm_arm_cpu_context{
+    /* some common regs in this context */
+    struct u_point_regs regs;
+    
+    /* ** spsr register struct */
+
+    struct vcpu *running_vcpu;
+
 };
 
 
