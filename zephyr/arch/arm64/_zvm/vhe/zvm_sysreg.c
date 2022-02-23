@@ -38,5 +38,5 @@ void zvm_vcpu_load_sysreg(struct vcpu *vcpu)
 
     /* **get and save the current cpu state */
     /////* ** ready to load guest on el1
-
+    
 }

@@ -14,6 +14,7 @@
 #include <arch/arm64/lib_helpers.h>
 #include <_zvm/debug/debug.h>
 #include <_zvm/vm/vm.h>
+#include <_zvm/vhe/zvm_sysreg.h>
 
 /**
  * @brief whether hyp and vhe is supported.
@@ -105,9 +106,16 @@ static int zvm_vcpu_first_init_run(struct vcpu *vcpu){
 
 }
 
+/**
+ * @brief zvm_arch_vcpu_load is for hardware init 
+ * This function aim to load hardware feature for vcpu,
+ * for vgic, vtimer and ex.
+ * @param vcpu 
+ * @param cpu 
+ */
 static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
 {
-    struct kvm_s2_mmu *mmu;
+    struct zvm_arch_stage2_mmu *mmu;
 
     mmu = vcpu->arch.s2_mmu;
 
@@ -122,6 +130,8 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
     /* VHE mode register load */
     if(2)
        zvm_vcpu_load_sysreg(vcpu); 
+    
+
 
 }
 
