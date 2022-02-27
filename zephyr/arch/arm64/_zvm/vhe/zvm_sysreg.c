@@ -27,8 +27,6 @@ struct zvm_host_date zhost_date;
  * register information.
  * warning: must consider the redirection situation of register when OS on el2. 
  * @vcpu: The VCPU pointer
- *
- * 
  */
 void zvm_vcpu_load_sysreg(struct vcpu *vcpu)
 {
@@ -121,4 +119,6 @@ void zvm_vcpu_load_sysreg(struct vcpu *vcpu)
 
     /* Set the vcpu_loaded falg */
     vcpu->arch.vcpu_sys_register_loaded = true;
+
+    active_hyp_trap(vcpu);
 }

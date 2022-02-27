@@ -131,6 +131,11 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
     if(2)
        zvm_vcpu_load_sysreg(vcpu); 
     
+    /* ** avoid set any FPSMID flag on this stage */
+
+    /* ** support pmu_v3 latter */
+
+    /* ** enable vcpu preempted function later: kvm_arm_is_pvtime_enabled()*/ 
 
 
 }
