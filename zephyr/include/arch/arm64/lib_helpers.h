@@ -61,23 +61,48 @@ MAKE_REG_HELPER(cntv_cval_el0)
 MAKE_REG_HELPER(cntvct_el0);
 MAKE_REG_HELPER(cntvoff_el2);
 MAKE_REG_HELPER(currentel);
-MAKE_REG_HELPER(daif)
-MAKE_REG_HELPER(hcr_el2);
-MAKE_REG_HELPER(id_aa64pfr0_el1);
-MAKE_REG_HELPER(id_aa64mmfr0_el1);
-MAKE_REG_HELPER(scr_el3);
-MAKE_REG_HELPER(tpidrro_el0);
 MAKE_REG_HELPER(clidr_el1);
 MAKE_REG_HELPER(csselr_el1);
 MAKE_REG_HELPER(ccsidr_el1);
-MAKE_REG_HELPER(vmpidr_el2);
+MAKE_REG_HELPER(daif)
+MAKE_REG_HELPER(hcr_el2);
+MAKE_REG_HELPER(hstr_el2);
+MAKE_REG_HELPER(id_aa64pfr0_el1);
+MAKE_REG_HELPER(id_aa64mmfr0_el1);
 MAKE_REG_HELPER(mpidr_el1);
 MAKE_REG_HELPER(midr_el1);
-MAKE_REG_HELPER(vpidr_el2);
-MAKE_REG_HELPER(pmcr_el0);
 MAKE_REG_HELPER(mdcr_el2);
+MAKE_REG_HELPER(pmcr_el0);
+MAKE_REG_HELPER(par_el1)
+MAKE_REG_HELPER(scr_el3);
+MAKE_REG_HELPER(sp_el1);
+MAKE_REG_HELPER(tpidrro_el0);
+MAKE_REG_HELPER(tpidr_el0);
+MAKE_REG_HELPER(tpidr_el1);
+MAKE_REG_HELPER(vmpidr_el2);
+MAKE_REG_HELPER(vpidr_el2);
 MAKE_REG_HELPER(vttbr_el2);
 
+/* Add some VHE related registers */
+#define CONFIG_VHE
+#if defined(CONFIG_VHE)
+MAKE_REG_HELPER(afsr0_el12);
+MAKE_REG_HELPER(afsr1_el12);
+MAKE_REG_HELPER(amair_el12);
+MAKE_REG_HELPER(cpacr_el12);
+MAKE_REG_HELPER(contextidr_el12);
+MAKE_REG_HELPER(cntkctl_el12);
+MAKE_REG_HELPER(esr_el12);
+MAKE_REG_HELPER(elr_el12);
+MAKE_REG_HELPER(far_el12);
+MAKE_REG_HELPER(mair_el12);
+MAKE_REG_HELPER(spsr_el12);
+MAKE_REG_HELPER(sctlr_el12);
+MAKE_REG_HELPER(tcr_el12);
+MAKE_REG_HELPER(ttbr0_el12);
+MAKE_REG_HELPER(ttbr1_el12);
+MAKE_REG_HELPER(vbar_el12);
+#endif
 
 MAKE_REG_HELPER_EL123(actlr)
 MAKE_REG_HELPER_EL123(cpacr)

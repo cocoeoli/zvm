@@ -19,6 +19,7 @@
 
 #define ZVM_MAX_VCPUS 32
 
+
 struct zvm_arch {
     /* The VMID. */
     uint64_t vmid;
@@ -89,6 +90,15 @@ struct zvm_vcpu_arch {
 
     /* stage-2 paging translation */
     struct zvm_arch_stage2_mmu *s2_mmu;
+
+    /* register load flag */
+    bool vcpu_sys_register_loaded;
+
+    /*store the host's tarp register value before guest entry */
+    uint64_t host_mdcr_el2; 
+
+    /*store the guest's trap register value after guest entry */
+    uint64_t guest_mdcr_el2;
 };
 
 struct u_point_regs{
@@ -101,16 +111,6 @@ struct u_point_regs{
     uint64_t    pstate;
 };
 
-/* arm aarch64 cpu context struct */
-struct zvm_arm_cpu_context{
-    /* some common regs in this context */
-    struct u_point_regs regs;
-    
-    /* ** spsr register struct */
-
-    struct vcpu *running_vcpu;
-
-};
 
 
 #endif /* ZVM_ASM_ZVM_HOST_H__ */
