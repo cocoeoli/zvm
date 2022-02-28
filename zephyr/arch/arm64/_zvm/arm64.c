@@ -15,6 +15,7 @@
 #include <_zvm/debug/debug.h>
 #include <_zvm/vm/vm.h>
 #include <_zvm/vhe/zvm_sysreg.h>
+#include <arch/arm64/_zvm/zvm_arm.h>
 
 /**
  * @brief whether hyp and vhe is supported.
@@ -123,9 +124,9 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
 
     vcpu->cpu = cpu;
 
-    /* **load vgic for this vcpu */
+    /* **load vgic for this vcpu later */
 
-    /* **load vtimer for this vcpu */
+    /* **load vtimer for this vcpu later */
 
     /* VHE mode register load */
     if(2)
@@ -137,10 +138,31 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
 
     /* ** enable vcpu preempted function later: kvm_arm_is_pvtime_enabled()*/ 
 
+/* judge if this cpu run mutiple threads */  
+#ifdef CONFIG_SCHED_CPU_MASK_PIN_ONLY
+    /*TWE: Traps EL0 and EL1 execution of WFE instructions to EL2, when EL2 is enabled in the current 
+    Security state, from both Execution states, reported using EC syndrome value 0x01 */
+	vcpu->arch.hcr_el2 &= ~HCR_TWE;
+
+    /* ** vgic TWI bit flag, init later */
+#else
+    /* first line is TWE instruction, and second line is TWI instruction, detail see above log. */
+    vcpu->arch.hcr_el2 |= HCR_TWE;
+    vcpu->arch.hcr_el2 |= HCR_TWI;
+#endif
+
+    /*For vhe mode, DEBUG related code do nothing */
 
 }
 
-
+/**
+ * @brief zvm_arch_vcpu_run is aim to run guest code.
+ * This function aim to make full prepartion for running guest code, 
+ * and then execute VM code in a loop.
+ * 
+ * @param vcpu 
+ * @return int 
+ */
 int zvm_arch_vcpu_run(struct vcpu *vcpu)
 {
     struct zvm_run *run = vcpu->run;
@@ -157,7 +179,10 @@ int zvm_arch_vcpu_run(struct vcpu *vcpu)
 
     /* no premption for this vcpu */
     /* no smp for this vcpu now */
+
+    /* load vcpu register and init context for this vcpu */
     zvm_arch_vcpu_load(vcpu, 0);
+
 
 }
 
