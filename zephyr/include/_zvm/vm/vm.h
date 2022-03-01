@@ -73,6 +73,9 @@ struct vcpu {
     /* arch related vcpu info */
     struct zvm_vcpu_arch arch;
 
+    /* set signal info between threads */
+    int set_sig_on;
+
 };
 
 /* vcpu task struct */

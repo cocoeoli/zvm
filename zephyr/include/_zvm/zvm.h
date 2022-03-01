@@ -39,6 +39,12 @@
 #define MEMORY_NODE_ID  memory_40000000
 #define DT_MB           (1024 * 1024)
 
+
+
+/* Below is zvm exit code for error handling */
+#define ZVM_EXIT_UNKNOWN        0
+
+
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.
  * 

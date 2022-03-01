@@ -58,6 +58,9 @@ typedef struct vcpu_context vcpu_context_t;
 struct zvm_run{
     /* Out. */
     uint32_t exit_reason;
+
+    /* Exit now */
+    uint8_t exit_now;
 };
 
 

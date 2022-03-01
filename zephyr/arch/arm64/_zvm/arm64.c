@@ -12,6 +12,7 @@
 #include <kernel_internal.h>
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
+#include <_zvm/zvm.h>
 #include <_zvm/debug/debug.h>
 #include <_zvm/vm/vm.h>
 #include <_zvm/vhe/zvm_sysreg.h>
@@ -155,6 +156,75 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
 
 }
 
+
+static void update_vm_vmid(uint32_t vmid, uint64_t vmid_gen)
+{
+
+}
+
+/**
+ * @brief zvm_guest_loop for prepare running guest code. 
+ * This function aim to make preparetion before running guest os and restore
+ * the origin hardware state after guest exit.
+ * @param vcpu 
+ * @return int 
+ */
+static int zvm_guest_loop(struct vcpu *vcpu)
+{
+    int ret;
+
+    /* check conditions for reschdule before guest, check wheather there is more importent 
+    thread need to run */
+    /* ** Do it later for call cond_resched()*/
+
+    /* ** update vm's vmid on this vcpu, below function need to perfecting later */
+    update_vm_vmid(vcpu->arch.s2_mmu->vmid, vcpu->arch.s2_mmu->vmid_generation);
+
+    /* ** request wheather this guest run on this vcpu */
+
+    /* ** disable preempt on this context, likely memory barrier */
+
+    /* ** disable irq before running guest context */
+
+    /* ** flush vgic hareware state */
+
+    /* ** set vcpu->mode to IN_GUEST_NODE */
+
+    /* ** re-check the exit_request , if exit , we should re_sync vgic and timer hardware state*/
+
+    /* ** we will add debug function on next stage */
+
+    /*********************** enter guest ******************************/
+
+
+
+    /*********************** exit  guest ******************************/
+
+    /* ** if we set debug before, we must clear it here */
+
+    /* ** sync hardware vgic state here */
+
+    /* ** sync hardware vtimer state here */
+
+    /* ** if set FPSIMD before, we must clear it here */
+
+    /* ** enable irq after running guest */
+
+    /* ** running guest_exit here */
+
+    /* ** call trace_kvm_exit(ret, kvm_vcpu_trap_get_class(vcpu), *vcpu_pc(vcpu)); */
+
+    /* ** we should handle exit here between we re-enable preepted */
+
+    /* ** enable preempt here to restart preempt */
+
+    /* ** finally get the ret code before start the next loop */
+
+    return ret;
+}
+
+
+
 /**
  * @brief zvm_arch_vcpu_run is aim to run guest code.
  * This function aim to make full prepartion for running guest code, 
@@ -183,6 +253,25 @@ int zvm_arch_vcpu_run(struct vcpu *vcpu)
     /* load vcpu register and init context for this vcpu */
     zvm_arch_vcpu_load(vcpu, 0);
 
+    /* judge if exit now */
+    if(run->exit_now){
+        ret = -1;
+        /* ** We can't understand the function of out: clearly, let add it later */ 
+    }
+
+    /* ** add signal later for thread synchronize */
+    if(vcpu->set_sig_on){
+        //set signal here
+    }
+    
+    run->exit_reason = ZVM_EXIT_UNKNOWN;
+
+    ret = 1;
+
+    /* prepare to enter guest on below loop */
+    while(ret > 0){
+        ret = zvm_guest_loop(vcpu);
+    }
 
 }
 
