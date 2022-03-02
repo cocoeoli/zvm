@@ -105,4 +105,12 @@
 /* Above codes may have copyright risk */
 
 
+#define VTTBR_VMID_SHIFT	(UL(48))
+
+/* CPACR_EL1 Controls access to trace, SVE, and Advanced SIMD and floating-point functionality */
+#define CPACR_EL1_TTA		BIT(28)
+
+/* Hyp Coprocessor Trap Register */
+#define CPTR_EL2_TAM		BIT(30)
+
 #endif /* ZEPHYR_INCLUDE_ARCH_ARM64_TPIDRRO_EL0_H_ */

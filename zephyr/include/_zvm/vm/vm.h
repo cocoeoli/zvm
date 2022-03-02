@@ -13,7 +13,7 @@
 #include <stddef.h>
 
 #include <kernel/thread.h>
-
+#include <kernel_structs.h>
 #include <_zvm/asm/zvm_host.h>
 #include <_zvm/asm/mm.h>
 #include <_zvm/os/os.h>
@@ -75,6 +75,12 @@ struct vcpu {
 
     /* set signal info between threads */
     int set_sig_on;
+
+    /* vcpu's thread wait queue */
+    _wait_q_t *t_wq; 
+
+    /* vcpu's running mode */
+    int32_t r_mode;
 
 };
 

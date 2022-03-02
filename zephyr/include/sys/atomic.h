@@ -114,6 +114,15 @@ typedef atomic_ptr_t atomic_ptr_val_t;
 #define ATOMIC_DEFINE(name, num_bits) \
 	atomic_t name[ATOMIC_BITMAP_SIZE(num_bits)]
 
+
+
+/**
+ * @brief Define a read of atomic_t value.
+ * 
+ */
+#define ATOMIC_READ(i) 	(*(volatile long *)&i)
+
+
 /**
  * @brief Atomically test a bit.
  *

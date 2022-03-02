@@ -20,6 +20,7 @@
 #define ZVM_MAX_VCPUS 32
 
 
+
 struct zvm_arch {
     /* The VMID. */
     uint64_t vmid;
@@ -33,6 +34,9 @@ struct zvm_arch {
     
 	/* The maximum number of vCPUs depends on the used GIC model */
 	int max_vcpus;
+
+    /* VTCR_EL2 for this VM */
+    uint64_t    vtcr_el2;
 
     /**
      * @TODO vGIC and vTimer add later.
@@ -60,6 +64,9 @@ struct zvm_arch_stage2_mmu{
 
     /* last ran vcpu id on each pcpu */
     int *last_vcpu_ran;
+
+    /* stage-2 related vcpu_arch */
+    struct zvm_arch *arch_zvm;
     
 };
 
@@ -82,7 +89,7 @@ struct zvm_vcpu_arch {
      * @TODO vGIC and vTimer add later. 
      */
 
-    /* Don't run the guest. */
+    /* Don't run the guest on this vcpu */
     bool pause;
 
     /* first run this vpcu flag */
@@ -101,15 +108,15 @@ struct zvm_vcpu_arch {
     uint64_t guest_mdcr_el2;
 };
 
-struct u_point_regs{
-    uint64_t    regs[31];
 
-    uint64_t    sp;
 
-    uint64_t    pc;
+/* below function is defined in hyp.S */
+extern void _zvm_flush_vm_context(void);
 
-    uint64_t    pstate;
-};
+/* -------------end------------------ */
+
+/* call hyp function entry */
+uint64_t _zvm_sys_call_hyp(void *hyp_func, ...);
 
 
 

@@ -10,13 +10,28 @@
  */
 #include <kernel.h>
 #include <kernel_internal.h>
+#include <kernel_structs.h>
+#include <sys/atomic.h>
+#include <syscall_handler.h>
+#include <spinlock.h>
+#include <toolchain.h>
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
+#include <arch/arm64/_zvm/zvm_arm.h>
 #include <_zvm/zvm.h>
+#include <_zvm/asm/zvm_host.h>
 #include <_zvm/debug/debug.h>
 #include <_zvm/vm/vm.h>
 #include <_zvm/vhe/zvm_sysreg.h>
-#include <arch/arm64/_zvm/zvm_arm.h>
+
+/* vmid atomic variable */
+static atomic_t global_zvm_vmid = ATOMIC_INIT(1);
+/* next vmid ready to allocate to guest vm*/
+static uint16_t global_zvm_next_vmid;
+/* spin lock of vmid */
+static struct k_spinlock global_zv_lock;
+
+
 
 /**
  * @brief whether hyp and vhe is supported.
@@ -156,10 +171,70 @@ static void zvm_arch_vcpu_load(struct vcpu *vcpu, int cpu)
 
 }
 
-
-static void update_vm_vmid(uint32_t vmid, uint64_t vmid_gen)
+/**
+ * @brief update_vm_vmid aim to allocate a special vmid for each vm
+ * 
+ * @param vmid 
+ * @param vmid_gen 
+ */
+static void update_vm_vmid(uint32_t *vmid, uint64_t *vmid_gen)
 {
+    k_spinlock_key_t key;
 
+    /* this vmid is in used */
+    if(unlikely(*vmid_gen == ATOMIC_READ(global_zvm_vmid)))
+        return;
+    
+    /* add lock */
+    k_spin_lock(&global_zv_lock);
+
+    /* this vmid is in used */
+    if(unlikely(*vmid_gen == ATOMIC_READ(global_zvm_vmid))){
+        k_spin_unlock(&global_zv_lock, key);
+        return;
+    }
+
+    /* First use of vmid value  */
+    if(unlikely(global_zvm_next_vmid == 0)){
+        /* zvm_vmid inc 1 */
+        atomic_inc(&global_zvm_vmid);
+
+        /* First init vmid */
+        global_zvm_next_vmid = 1;
+
+        /* ** add smp support later, we must consider the situation
+        that other cpu entry this guest */
+
+        /* flush the tlb and cache cleaned */
+        _zvm_sys_call_hyp(_zvm_flush_vm_context);
+        
+    }
+    /* read current vmid generation*/
+    *vmid_gen = ATOMIC_READ(global_zvm_vmid);
+
+    /* get the new vmid */
+    *vmid = global_zvm_next_vmid;
+    global_zvm_next_vmid++;
+
+    /* unlock vmid */
+    k_spin_unlock(&global_zv_lock, key);
+}
+
+/**
+ * @brief zvm_guest_vm_enter only set a VCPU flag to this thread;
+ * 
+ */
+static void zvm_guest_vm_enter(void)
+{
+    uint32_t flag;
+
+    /* **save local irq later */
+
+    _current->base.user_options |= K_VCPU;
+
+    /* **restore local irq later */
+
+    /* ** no smp process stage , just do it later */
 }
 
 /**
@@ -177,26 +252,47 @@ static int zvm_guest_loop(struct vcpu *vcpu)
     thread need to run */
     /* ** Do it later for call cond_resched()*/
 
-    /* ** update vm's vmid on this vcpu, below function need to perfecting later */
-    update_vm_vmid(vcpu->arch.s2_mmu->vmid, vcpu->arch.s2_mmu->vmid_generation);
+    /* **update vm's vmid on this vcpu, below function need to perfecting later,
+    there is still something to do, 
+    for example: where to allocate arch.pgd table? */
+    update_vm_vmid(&vcpu->arch.s2_mmu->vmid, &vcpu->arch.s2_mmu->vmid_generation);
 
-    /* ** request wheather this guest run on this vcpu */
+    /* judge wheather this guest run on this vcpu */
+    if(vcpu->arch.pause){
+        _wait_q_t *this_vcpu_wq = vcpu->t_wq;
+        /* ** if we set pause flag, we must wait for a signal that active this thread, 
+        it will be done later */
+    }
 
-    /* ** disable preempt on this context, likely memory barrier */
+    /* disable preempt on this context, as likely memory barrier */
+    compiler_barrier();
 
-    /* ** disable irq before running guest context */
+    /* ** disable irq before running guest context, it will do later after learn it */
 
-    /* ** flush vgic hareware state */
+    /* ** flush vgic hareware state, no need to do on this stage */
 
     /* ** set vcpu->mode to IN_GUEST_NODE */
 
-    /* ** re-check the exit_request , if exit , we should re_sync vgic and timer hardware state*/
+    /* ** re-check the exit_request(atomic condition) , 
+    if exit , we should re_sync vgic and timer hardware state, remenber do it later*/
+
+    if(ret <=0 || unlikely(vcpu->arch.s2_mmu->vmid == ATOMIC_READ(global_zvm_vmid))){
+        /* ** enable irq before exit guest */
+        
+        return ret;
+    }
 
     /* ** we will add debug function on next stage */
+    
 
     /*********************** enter guest ******************************/
+    /* ** maybe do trace point here later */
 
+    zvm_guest_vm_enter();
+    vcpu->r_mode = ZVM_IN_GUEST_MODE;
 
+    /* run the vcpu */
+    _zvm_sys_call_hyp(_zvm_vcpu_run, vcpu);
 
     /*********************** exit  guest ******************************/
 

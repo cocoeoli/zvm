@@ -52,6 +52,7 @@
 #define SCTLR_SA_BIT		BIT(3)
 #define SCTLR_I_BIT		BIT(12)
 
+#define CPACR_EL1_ZEN			(0x3 << 16)
 #define CPACR_EL1_FPEN_NOTRAP	(0x3 << 20)
 
 #define SCR_NS_BIT		BIT(0)

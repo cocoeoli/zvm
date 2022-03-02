@@ -15,6 +15,7 @@
 #include <kernel_internal.h>
 #include <arch/cpu.h>
 #include <arch/arm64/lib_helpers.h>
+#include <_zvm/asm/vcpu.h>
 
 /*below value is caculated from vcpu_sysreg on '../arm64/kvm_host.h' 
 for the base value with 149 */
@@ -42,18 +43,26 @@ for the base value with 149 */
 #define VCPU_AMAIR_EL1      (20)
 #define VCPU_CNTKCTL_EL1    (21)
 #define VCPU_PAR_EL1        (22)
+#define VCPU_MDSCR_EL1      (23)
 
 #define VCPU_ELR_EL1        (106)
 #define VCPU_SP_EL1         (107)
 #define VCPU_SPSR_EL1       (108)
 
 
+/* User general purpose, floating point and debug registers. */
+struct user_pt_regs{
+    uint64_t regs[31];
+    uint64_t sp;
+    uint64_t pc;
+    uint64_t pstate;
+};
 
 
 /* arm aarch64 cpu context struct */
 struct zvm_arm_cpu_context{
     /* some common regs in this context */
-    struct u_point_regs regs;
+    struct user_pt_regs regs;
     
     /* ** spsr register struct */
 
@@ -64,8 +73,8 @@ struct zvm_arm_cpu_context{
 
 };
 
-/* zvm_host_date for storing the zephyr context */
-struct zvm_host_date{
+/* zvm_host_data for storing the zephyr context */
+struct zvm_host_data{
     /* related context */
     struct zvm_arm_cpu_context host_ctext;
 };

@@ -69,6 +69,7 @@ MAKE_REG_HELPER(hcr_el2);
 MAKE_REG_HELPER(hstr_el2);
 MAKE_REG_HELPER(id_aa64pfr0_el1);
 MAKE_REG_HELPER(id_aa64mmfr0_el1);
+MAKE_REG_HELPER(mdscr_el1)
 MAKE_REG_HELPER(mpidr_el1);
 MAKE_REG_HELPER(midr_el1);
 MAKE_REG_HELPER(mdcr_el2);
@@ -82,6 +83,7 @@ MAKE_REG_HELPER(tpidr_el1);
 MAKE_REG_HELPER(vmpidr_el2);
 MAKE_REG_HELPER(vpidr_el2);
 MAKE_REG_HELPER(vttbr_el2);
+MAKE_REG_HELPER(vtcr_el2);
 
 /* Add some VHE related registers */
 #define CONFIG_VHE

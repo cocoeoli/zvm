@@ -121,6 +121,11 @@ SECTIONS
         *(".text.*")
         *(.gnu.linkonce.t.*)
 
+#ifdef CONFIG_ZVM
+        KEEP(*(.hyp))
+        KEEP(*(".hyp.*"))
+#endif
+
         /*
          * These are here according to 'arm-zephyr-elf-ld --verbose',
          * after .gnu.linkonce.t.*

@@ -18,7 +18,7 @@
 #include <_zvm/asm/virt.h>
 
 
-struct zvm_host_date zhost_date;
+struct zvm_host_data zhost_date;
 
 
 /**

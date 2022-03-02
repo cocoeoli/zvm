@@ -41,9 +41,12 @@
 
 
 
-/* Below is zvm exit code for error handling */
-#define ZVM_EXIT_UNKNOWN        0
+/* Below code are zvm exit code for error handling */
+#define ZVM_EXIT_UNKNOWN        (0)
 
+/* Below code are GUEST MODE of VM */
+#define ZVM_OUT_GUEST_MODE      (0)
+#define ZVM_IN_GUEST_MODE       (1) 
 
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.
