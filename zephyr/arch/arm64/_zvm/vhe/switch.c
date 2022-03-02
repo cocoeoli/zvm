@@ -22,7 +22,11 @@
 struct zvm_host_date zhost_data;
 
 
-
+/**
+ * @brief active_hyp_trap aim to enable trap
+ * 
+ * @param vcpu 
+ */
 static void active_hyp_trap(struct vcpu *vcpu)
 {
     uint64_t val;
@@ -33,10 +37,14 @@ static void active_hyp_trap(struct vcpu *vcpu)
     we can start edit it */
 
     /* write trap control register here */
+    //hcr_elx |= HCR_TVM;
+    /* This simple init is learned from 3.16 */
+    hcr_elx |= vcpu->arch.irq_line;
     write_hcr_el2(hcr_elx);
 
-    /* **ignore serror virt interupt on this stage, after we know the function of 
-     cpus_have_final_cap(), we will add it */
+    ///* Test Virtual SError interrupt. */
+    //if(hcr_elx & HCR_VSE)
+
     
     val = read_cpacr_el1();
     /* Traps EL0 and EL1 System register accesses to all implemented trace registers from 
@@ -44,9 +52,17 @@ static void active_hyp_trap(struct vcpu *vcpu)
     val |= CPACR_EL1_TTA;
     val &=  ~CPACR_EL1_ZEN;
     val |= CPTR_EL2_TAM;
+
+    /* ** At this stage, we don't support SVE, so don't init here */
+    
+    /* set Traps execution at EL1 and EL0 of instructions that access the Advanced SIMD 
+    and floating-point registers  may trap to EL2 */
     val &= ~CPACR_EL1_FPEN_NOTRAP;
-    /******** --- Do it later ----*********/
-    //fpsimd
+    write_cpacr_el1(val);
+
+    /* set vector table to var_el1 register */
+    write_vbar_el1(_hyp_vector_table);
+
 }
 
 
@@ -87,4 +103,6 @@ int _zvm_vcpu_run(struct vcpu *vcpu)
 
     /* active trap to el2*/
     active_hyp_trap(vcpu);
+
+    
 }

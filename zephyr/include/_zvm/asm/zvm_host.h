@@ -19,6 +19,8 @@
 
 #define ZVM_MAX_VCPUS 32
 
+/* below are vcpu_arch flags */
+#define ZVM_ARM64_FP_ENABLED        BIT(1)
 
 
 struct zvm_arch {
@@ -106,12 +108,21 @@ struct zvm_vcpu_arch {
 
     /*store the guest's trap register value after guest entry */
     uint64_t guest_mdcr_el2;
+
+    /* interrupt related field, get from 3.16 */
+    uint64_t irq_line;
+
+    /* vcpu features state flag*/
+    uint64_t vcpu_flags;
 };
 
 
 
 /* below function is defined in hyp.S */
 extern void _zvm_flush_vm_context(void);
+
+/* hyp_vector function */
+extern void _hyp_vector_table(void);
 
 /* -------------end------------------ */
 

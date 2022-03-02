@@ -82,6 +82,7 @@ struct vcpu {
     /* vcpu's running mode */
     int32_t r_mode;
 
+
 };
 
 /* vcpu task struct */
