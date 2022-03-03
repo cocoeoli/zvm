@@ -15,6 +15,7 @@
 #include <arch/cpu.h>
 #include <arch/arm64/_zvm/zvm.h>
 #include <arch/arm64/_zvm/zvm_arm.h>
+#include <arch/arm64/_zvm/zvm_emulate.h>
 #include <_zvm/vm/vm.h>
 
 
@@ -65,6 +66,39 @@ static void active_hyp_trap(struct vcpu *vcpu)
 
 }
 
+/**
+ * @brief zvm_adjust_potential_exec aim to set PC pending flag.
+ * 
+ * @param vcpu 
+ */
+static void zvm_adjust_potential_exec(struct vcpu *vcpu)
+{
+    if(vcpu->arch.vcpu_flags & ZVM_ARM64_PENDING_EXCEPTION){
+        /* ** ignore 32 bit vcpu here, do it later */
+        /* init aarch64 exception */
+        switch (vcpu->arch.vcpu_flags & ZVM_ARM64_EXCEPT_MASK)
+        {
+        case ZVM_ARM64_EXCEPT_ES:
+            exception64_entry(vcpu, SPSR_MODE_EL1H, EXCEPT_SYNC);
+            break;
+        
+        default:
+            /* Do nothing */
+            break;
+        }
+        vcpu->arch.vcpu_flags &= ~(ZVM_ARM64_PENDING_EXCEPTION | ZVM_ARM64_EXCEPT_MASK);
+
+    }else if(vcpu->arch.vcpu_flags & ZVM_ARM64_INCREMENT_PC){
+        /* ** ignore 32 bit vcpu here, do it later */
+        /* skip pc instruction  */
+        *((uint32_t *)&vcpu->arch.ctxt.regs.pc) += 4;
+        *((uint32_t *)&vcpu->arch.ctxt.regs.pstate) &= ~0x00000c00;
+        *((uint32_t *)&vcpu->arch.ctxt.regs.pstate) &= ~BIT(21);
+
+        vcpu->arch.vcpu_flags &= ~ZVM_ARM64_INCREMENT_PC;
+    }
+}
+
 
 int _zvm_vcpu_run(struct vcpu *vcpu)
 {
@@ -101,8 +135,18 @@ int _zvm_vcpu_run(struct vcpu *vcpu)
     isb();
     /** end load stage-2 **/
 
-    /* active trap to el2*/
+    /* active some trap to el2*/
     active_hyp_trap(vcpu);
 
-    
+    /* adjust PC and  exception for arm64*/
+    zvm_adjust_potential_exec(vcpu);
+
+    /* restore guest sys_reg here */
+    restore_guest_sysreg(g_ctxt);
+
+    /* ** debug related code may be added later */
+
+    do{
+        exit_code = _guest_vm_entry(vcpu);
+    }while(fix);
 }

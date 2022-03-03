@@ -21,5 +21,10 @@
 
 void zvm_vcpu_load_sysreg(struct vcpu *vcpu);
 
+/**
+ * @brief restore_guest_sysreg aim to restore guest sysreg.
+*/
+void restore_guest_sysreg(struct zvm_arm_cpu_context *context);
+
 
 #endif //__ZVM_SYSREG_H__

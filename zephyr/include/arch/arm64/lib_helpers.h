@@ -80,6 +80,7 @@ MAKE_REG_HELPER(sp_el1);
 MAKE_REG_HELPER(tpidrro_el0);
 MAKE_REG_HELPER(tpidr_el0);
 MAKE_REG_HELPER(tpidr_el1);
+MAKE_REG_HELPER(vdisr_el2);
 MAKE_REG_HELPER(vmpidr_el2);
 MAKE_REG_HELPER(vpidr_el2);
 MAKE_REG_HELPER(vttbr_el2);

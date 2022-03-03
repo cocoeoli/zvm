@@ -122,3 +122,34 @@ void zvm_vcpu_load_sysreg(struct vcpu *vcpu)
 
     active_hyp_trap(vcpu);
 }
+
+/**
+ * @brief restore_guest_sysreg aim to restore guest sysreg.
+ * This function main to set below registers:
+ * 1. mdscr_el1: debug related register.
+ * 2. spsr_el2: hold the process state when exception is taken to EL2.
+ * 3. elr_el2: hold the el2 return address.
+ * @param context 
+ */
+void restore_guest_sysreg(struct zvm_arm_cpu_context *context)
+{
+    uint64_t vcpu_pstate;
+    uint64_t vcpu_mode;
+    /* restore common state: set control register for the debug implementation. */
+    write_mdscr_el1(context->sys_regs[VCPU_MDSCR_EL1]);
+
+    vcpu_pstate = context->regs.pstate;
+    vcpu_mode = vcpu_pstate & 0x1f;
+
+    /* Holds the saved process state when an exception is taken to EL2. */
+    if(!(vcpu_mode&0x10) && vcpu_mode >= SPSR_MODE_EL2T)
+        vcpu_pstate = SPSR_MODE_EL2H | SPSR_IL_BIT;
+    
+    /*elr_el2 holds the el2 return address */
+    write_elr_el2(context->regs.pc);
+    /*spsr_el2 holds the saved process state when an exception is taken to EL2*/
+    write_spsr_el2(vcpu_pstate);
+
+    /* VDISR records that a virtual SError interrupt has been consumed by an ESB instruction executed at EL1. */
+    write_vdisr_el2(context->sys_regs[VCPU_DISR_EL1]);
+}

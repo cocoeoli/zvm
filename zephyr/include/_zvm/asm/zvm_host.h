@@ -13,6 +13,7 @@
 
 #include "pgtable-types.h"
 #include "vcpu.h"
+#include <arch/arm64/_zvm/zvm.h>
 #include <_zvm/asm/pgtable-types.h>
 #include <_zvm/asm/zvm_host.h>
 #include <_zvm/vm/vm.h>
@@ -20,7 +21,14 @@
 #define ZVM_MAX_VCPUS 32
 
 /* below are vcpu_arch flags */
+#define ZVM_ARM64_EXCEPT_ES         (0)
 #define ZVM_ARM64_FP_ENABLED        BIT(1)
+
+#define ZVM_ARM64_PENDING_EXCEPTION BIT(8)
+#define ZVM_ARM64_INCREMENT_PC      BIT(9)
+
+
+#define ZVM_ARM64_EXCEPT_MASK       (7 << 9)
 
 
 struct zvm_arch {
@@ -76,7 +84,7 @@ struct zvm_arch_stage2_mmu{
 /* vcpu arch info */
 struct zvm_vcpu_arch {
     /* vCPU context regs info. */
-    vcpu_context_t ctxt;
+    struct zvm_arm_cpu_context ctxt;
 
     /* HYP configuration. */
     uint64_t hcr_el2;
@@ -85,7 +93,7 @@ struct zvm_vcpu_arch {
     struct vcpu_fault_info fault;
 
     /* Pointer to host CPU context. */
-    vcpu_context_t *host_cpu_context;
+    struct zvm_arm_cpu_context *host_cpu_context;
 
     /**
      * @TODO vGIC and vTimer add later. 

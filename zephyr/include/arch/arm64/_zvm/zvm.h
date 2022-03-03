@@ -44,6 +44,7 @@ for the base value with 149 */
 #define VCPU_CNTKCTL_EL1    (21)
 #define VCPU_PAR_EL1        (22)
 #define VCPU_MDSCR_EL1      (23)
+#define VCPU_DISR_EL1       (25)
 
 #define VCPU_ELR_EL1        (106)
 #define VCPU_SP_EL1         (107)
@@ -72,6 +73,7 @@ struct zvm_arm_cpu_context{
     uint64_t sys_regs[VCPU_SYS_REG_NUM];
 
 };
+
 
 /* zvm_host_data for storing the zephyr context */
 struct zvm_host_data{

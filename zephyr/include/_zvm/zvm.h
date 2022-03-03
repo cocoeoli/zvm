@@ -48,6 +48,9 @@
 #define ZVM_OUT_GUEST_MODE      (0)
 #define ZVM_IN_GUEST_MODE       (1) 
 
+
+struct zvm_arm_cpu_context zvm_hyp_ctxt;
+
 /**
  * @brief Declare zvm_info structure to store basic information of zvm.
  * 
