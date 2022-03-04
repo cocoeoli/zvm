@@ -15,6 +15,12 @@
 #include <kernel.h>
 #include <kernel_internal.h>
 #include <_zvm/vm/vm.h>
+#include <_zvm/struct_offset.h>
+#include <_zvm/zvm_defs.h>
+
+Z_DEFINE_D(struct zvm_arm_cpu_context, zvm_hyp_context);
+
+
 
 /* @brief active trap register before entry guest */
 void active_hyp_trap(struct vcpu *vcpu);

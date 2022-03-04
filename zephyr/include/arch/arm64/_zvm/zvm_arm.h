@@ -1,5 +1,7 @@
 /*
  * Copyright (c) 2021 HNU 
+ * This file add some zvm arm64 related macro for below file:
+ * 1. zvm_entry.s
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -10,6 +12,9 @@
 
 
 #include <sys/util.h>           //BIT()
+
+/* ARM64 EXCPTION CODE */
+#define ARM64_EXCEPTION_IRQ		(0)
 
 /* hrc_el2 register bits 
  * For hyp configure.
